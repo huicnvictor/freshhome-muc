@@ -892,9 +892,9 @@
       <span data-lang-block data-lang="de">Verfügbare Termine</span>
     </h2>
     <p class="section-sub">
-      <span data-lang-block data-lang="zh">点日期查看当天 10:00–20:00 的安排：绿色为可预约，红色为已约。可预约时段与已约时段至少间隔一小时。上午时段暂不开放，请提前两周预约，实际时间以联系确认为准</span>
-      <span data-lang-block data-lang="en">Tap a date to see that day from 10:00 to 20:00: green is available, red is booked. Available slots stay at least one hour clear of booked ones. Mornings are currently not available. Please book two weeks ahead; times are confirmed by contacting us</span>
-      <span data-lang-block data-lang="de">Tippen Sie auf einen Tag, um ihn von 10:00 bis 20:00 zu sehen: Grün ist verfügbar, Rot ist belegt. Verfügbare Slots halten mindestens eine Stunde Abstand zu belegten. Vormittags aktuell keine Termine. Bitte zwei Wochen im Voraus buchen; Zeiten werden per Kontakt bestätigt</span>
+      <span data-lang-block data-lang="zh">预约时段为下午 13:00 至 18:00。点日期查看当天安排：绿色为可预约，红色为已约。可预约时段与已约时段至少间隔一小时。请提前两周预约，实际时间以联系确认为准</span>
+      <span data-lang-block data-lang="en">Bookings run from 13:00 to 18:00. Tap a date to see that day: green is available, red is booked. Available slots stay at least one hour clear of booked ones. Please book two weeks ahead; times are confirmed by contacting us</span>
+      <span data-lang-block data-lang="de">Termine sind von 13:00 bis 18:00 möglich. Tippen Sie auf einen Tag: Grün ist verfügbar, Rot ist belegt. Verfügbare Slots halten mindestens eine Stunde Abstand zu belegten. Bitte zwei Wochen im Voraus buchen; Zeiten werden per Kontakt bestätigt</span>
     </p>
 
     <div class="cal-wrap">
@@ -1200,7 +1200,7 @@
       months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
       title: function (y, m) { return y + '年 ' + LOC.zh.months[m]; },
       day: function (y, m, d) { return (m + 1) + '月' + d + '日'; },
-      pick: '点一个日期查看当天 10:00–20:00 的安排',
+      pick: '点一个日期查看当天 13:00–18:00 的安排',
       allBookedNote: '当天没有可预约时段',
       bookedTag: '已约',
       availTag: '可预约',
@@ -1214,7 +1214,7 @@
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       title: function (y, m) { return LOC.en.months[m] + ' ' + y; },
       day: function (y, m, d) { return LOC.en.months[m] + ' ' + d; },
-      pick: 'Tap a date to see that day from 10:00 to 20:00',
+      pick: 'Tap a date to see that day from 13:00 to 18:00',
       allBookedNote: 'No available slots this day',
       bookedTag: 'booked',
       availTag: 'available',
@@ -1228,7 +1228,7 @@
       months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
       title: function (y, m) { return LOC.de.months[m] + ' ' + y; },
       day: function (y, m, d) { return d + '. ' + LOC.de.months[m]; },
-      pick: 'Tippen Sie auf einen Tag, um ihn von 10:00 bis 20:00 zu sehen',
+      pick: 'Tippen Sie auf einen Tag, um ihn von 13:00 bis 18:00 zu sehen',
       allBookedNote: 'Keine freien Slots an diesem Tag',
       bookedTag: 'belegt',
       availTag: 'frei',
@@ -1240,8 +1240,8 @@
   };
   function lang() { var l = document.documentElement.getAttribute('lang'); return LOC[l] ? l : 'zh'; }
 
-  var DAY_START = 10;         // grid runs 10:00 .. DAY_END:00 inclusive
-  var DAY_END = 20;
+  var DAY_START = 13;         // grid runs 13:00 .. DAY_END:00 inclusive
+  var DAY_END = 18;
   var BUFFER = 1;             // hours an available slot must stay clear of a booked one
 
   var days = {};              // "2026-09-22" -> { booked: {13: true} }
