@@ -182,7 +182,8 @@
 
   /* day popover */
   .cal-pop {
-    position: absolute; z-index: 30; width: 190px; max-width: 74vw;
+    position: absolute; z-index: 30; width: 214px; max-width: 78vw;
+    max-height: 62vh; overflow-y: auto;
     background: var(--card); border: 1px solid var(--border); border-radius: 10px;
     box-shadow: 0 12px 32px rgba(20, 30, 28, 0.18); padding: 12px 14px 10px;
     text-align: left; font-size: 0.85rem;
@@ -200,12 +201,21 @@
   .cal-pop .pop-date { font-weight: 700; color: var(--ink); margin-bottom: 4px; padding-right: 16px; }
   .cal-pop .pop-note { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 8px; }
   .cal-pop .pop-row {
-    display: flex; justify-content: space-between; align-items: baseline;
+    display: flex; justify-content: space-between; align-items: center;
     padding: 5px 0; border-top: 1px solid var(--border);
   }
-  .cal-pop .pop-row .t { font-weight: 600; }
-  .cal-pop .pop-row .ok { color: var(--teal-dark); font-weight: 600; }
-  .cal-pop .pop-row .no { color: var(--ink-soft); text-decoration: line-through; }
+  .cal-pop .pop-row .t { font-weight: 600; letter-spacing: 0.01em; }
+  .cal-pop .pop-row .pill {
+    font-size: 0.72rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .cal-pop .pop-row.avail .t { color: var(--teal-dark); }
+  .cal-pop .pop-row.avail .pill { background: var(--teal-light); color: var(--teal-dark); }
+  .cal-pop .pop-row.booked .t { color: #a5392a; }
+  .cal-pop .pop-row.booked .pill { background: #f7e0da; color: #a5392a; }
+  .cal-pop .pop-row.buffer .t { color: var(--ink-soft); }
+  .cal-pop .pop-row.buffer .pill { background: #efe7dd; color: #8a7a5c; }
+  .cal-pop .pop-row.closed { opacity: 0.55; }
+  .cal-pop .pop-row.closed .pill { background: #eeebe4; color: var(--ink-soft); }
   .cal-pop .pop-close {
     position: absolute; top: 5px; right: 8px; border: none; background: none;
     font-size: 1.05rem; line-height: 1; color: var(--ink-soft); cursor: pointer; padding: 2px;
@@ -882,9 +892,9 @@
       <span data-lang-block data-lang="de">Verfügbare Termine</span>
     </h2>
     <p class="section-sub">
-      <span data-lang-block data-lang="zh">绿色日期还有空档，点一下看具体时间和已约情况。上午时段暂不开放，请提前两周预约，实际时间以联系确认为准</span>
-      <span data-lang-block data-lang="en">Dates in green still have openings — tap one to see the times and what's already booked. Mornings are currently not available. Please book two weeks ahead; times are confirmed by contacting us</span>
-      <span data-lang-block data-lang="de">Grün markierte Tage haben noch freie Zeiten — tippen Sie darauf, um Zeiten und belegte Slots zu sehen. Vormittags aktuell keine Termine. Bitte zwei Wochen im Voraus buchen; Zeiten werden per Kontakt bestätigt</span>
+      <span data-lang-block data-lang="zh">点日期查看当天 10:00–20:00 的安排：绿色为可预约，红色为已约。可预约时段与已约时段至少间隔一小时。上午时段暂不开放，请提前两周预约，实际时间以联系确认为准</span>
+      <span data-lang-block data-lang="en">Tap a date to see that day from 10:00 to 20:00: green is available, red is booked. Available slots stay at least one hour clear of booked ones. Mornings are currently not available. Please book two weeks ahead; times are confirmed by contacting us</span>
+      <span data-lang-block data-lang="de">Tippen Sie auf einen Tag, um ihn von 10:00 bis 20:00 zu sehen: Grün ist verfügbar, Rot ist belegt. Verfügbare Slots halten mindestens eine Stunde Abstand zu belegten. Vormittags aktuell keine Termine. Bitte zwei Wochen im Voraus buchen; Zeiten werden per Kontakt bestätigt</span>
     </p>
 
     <div class="cal-wrap">
@@ -1190,10 +1200,12 @@
       months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
       title: function (y, m) { return y + '年 ' + LOC.zh.months[m]; },
       day: function (y, m, d) { return (m + 1) + '月' + d + '日'; },
-      pick: '点一个日期查看当天的时间和已约情况',
-      allBookedNote: '当天已约满',
+      pick: '点一个日期查看当天 10:00–20:00 的安排',
+      allBookedNote: '当天没有可预约时段',
       bookedTag: '已约',
-      openTag: '可约',
+      availTag: '可预约',
+      bufferTag: '需间隔',
+      closedTag: '不开放',
       full: '满',
       fail: '暂时无法加载可预约时间，请直接联系我们'
     },
@@ -1202,10 +1214,12 @@
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       title: function (y, m) { return LOC.en.months[m] + ' ' + y; },
       day: function (y, m, d) { return LOC.en.months[m] + ' ' + d; },
-      pick: 'Tap a date to see its times and what is already booked',
-      allBookedNote: 'Fully booked',
+      pick: 'Tap a date to see that day from 10:00 to 20:00',
+      allBookedNote: 'No available slots this day',
       bookedTag: 'booked',
-      openTag: 'open',
+      availTag: 'available',
+      bufferTag: 'buffer',
+      closedTag: 'closed',
       full: 'full',
       fail: 'Could not load available times — please contact us directly'
     },
@@ -1214,32 +1228,48 @@
       months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
       title: function (y, m) { return LOC.de.months[m] + ' ' + y; },
       day: function (y, m, d) { return d + '. ' + LOC.de.months[m]; },
-      pick: 'Tippen Sie auf einen Tag, um Zeiten und belegte Slots zu sehen',
-      allBookedNote: 'Ausgebucht',
+      pick: 'Tippen Sie auf einen Tag, um ihn von 10:00 bis 20:00 zu sehen',
+      allBookedNote: 'Keine freien Slots an diesem Tag',
       bookedTag: 'belegt',
-      openTag: 'frei',
+      availTag: 'frei',
+      bufferTag: 'Puffer',
+      closedTag: 'geschlossen',
       full: 'voll',
       fail: 'Verfügbare Zeiten konnten nicht geladen werden — bitte direkt melden'
     }
   };
   function lang() { var l = document.documentElement.getAttribute('lang'); return LOC[l] ? l : 'zh'; }
 
-  var days = {};              // "2026-09-22" -> { times: ['09:00', ...], booked: {'09:00': true} }
-  var lockBefore = null;      // e.g. "13:00" — every slot earlier than this counts as booked
+  var DAY_START = 10;         // grid runs 10:00 .. DAY_END:00 inclusive
+  var DAY_END = 20;
+  var BUFFER = 1;             // hours an available slot must stay clear of a booked one
+
+  var days = {};              // "2026-09-22" -> { booked: {13: true} }
+  var openFromH = DAY_START;  // slots earlier than this show as "closed"
   var loadError = false;
   var selectedKey = null;
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
   function keyOf(y, m, d) { return y + '-' + pad(m + 1) + '-' + pad(d); }
+  function hhmm(h) { return pad(h) + ':00'; }
+  function parseH(s) { return s ? parseInt(String(s).split(':')[0], 10) : null; }
 
-  function isBooked(dateKey, tm) {
-    if (lockBefore && tm < lockBefore) return true;
-    return !!(days[dateKey] && days[dateKey].booked[tm]);
-  }
-  function hasOpenSlot(dateKey) {
+  // slot state for a given day + hour: 'closed' | 'booked' | 'buffer' | 'avail'
+  function slotState(dateKey, h) {
     var d = days[dateKey];
-    if (!d) return false;
-    return d.times.some(function (tm) { return !isBooked(dateKey, tm); });
+    if (!d) return 'closed';
+    if (h < openFromH) return 'closed';
+    if (d.booked[h]) return 'booked';
+    for (var i = 1; i <= BUFFER; i++) {
+      if (d.booked[h - i] || d.booked[h + i]) return 'buffer';
+    }
+    return 'avail';
+  }
+  function hasAvail(dateKey) {
+    for (var h = DAY_START; h <= DAY_END; h++) {
+      if (slotState(dateKey, h) === 'avail') return true;
+    }
+    return false;
   }
 
   function renderHint() {
@@ -1262,18 +1292,17 @@
     if (!d) return;
     var p = dateKey.split('-');
     var label = t.day(+p[0], +p[1] - 1, +p[2]);
-    var allBooked = !hasOpenSlot(dateKey);
-    var rows = d.times.map(function (tm) {
-      var booked = isBooked(dateKey, tm);
-      return '<div class="pop-row"><span class="t">' + tm + '</span>' +
-        (booked ? '<span class="no">' + t.bookedTag + '</span>'
-                : '<span class="ok">' + t.openTag + '</span>') +
-        '</div>';
-    }).join('');
+    var tag = { booked: t.bookedTag, avail: t.availTag, buffer: t.bufferTag, closed: t.closedTag };
+    var rows = '';
+    for (var h = DAY_START; h <= DAY_END; h++) {
+      var st = slotState(dateKey, h);
+      rows += '<div class="pop-row ' + st + '"><span class="t">' + hhmm(h) +
+        '</span><span class="pill">' + tag[st] + '</span></div>';
+    }
     pop.innerHTML =
       '<button type="button" class="pop-close" aria-label="close">&times;</button>' +
       '<div class="pop-date">' + label + '</div>' +
-      (allBooked ? '<div class="pop-note">' + t.allBookedNote + '</div>' : '') +
+      (!hasAvail(dateKey) ? '<div class="pop-note">' + t.allBookedNote + '</div>' : '') +
       rows;
     pop.hidden = false;
 
@@ -1341,8 +1370,8 @@
 
       if (cellDate < today) {
         cell.className += ' past';
-      } else if (days[k] && days[k].times.length) {
-        if (hasOpenSlot(k)) {
+      } else if (days[k]) {
+        if (hasAvail(k)) {
           cell.className += ' avail';
           var dot = document.createElement('span');
           dot.className = 'dot';
@@ -1391,13 +1420,16 @@
   fetch('availability.json', { cache: 'no-cache' })
     .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
     .then(function (data) {
-      lockBefore = data.morningLockedBefore || null;
-      (data.slots || []).forEach(function (s) {
-        if (!s || !s.date || !Array.isArray(s.times)) return;
-        var times = s.times.slice().sort();
+      var of = parseH(data.openFrom);
+      if (of !== null && !isNaN(of)) openFromH = of;
+      (data.days || []).forEach(function (s) {
+        if (!s || !s.date) return;
         var booked = {};
-        (s.booked || []).forEach(function (tm) { booked[tm] = true; });
-        days[s.date] = { times: times, booked: booked };
+        (s.booked || []).forEach(function (tm) {
+          var h = parseH(tm);
+          if (h !== null && !isNaN(h)) booked[h] = true;
+        });
+        days[s.date] = { booked: booked };
       });
     })
     .catch(function () { loadError = true; })
