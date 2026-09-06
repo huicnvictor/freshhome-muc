@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>FreshHome MUC · 后台</title>
+<style>
+  :root {
+    --teal: #1f7a6c; --teal-dark: #145a4f; --teal-light: #e6f3f0;
+    --ink: #1c2523; --ink-soft: #5b6764; --bg: #fbfaf8; --card: #fff;
+    --border: #e4e0d8; --red: #a5392a; --red-light: #f7e0da; --buffer: #efe7dd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 1.25rem; margin: 0; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .muted { color: var(--ink-soft); font-size: 0.85rem; }
+  button {
+    font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--card); padding: 8px 14px; color: var(--ink);
+  }
+  button.primary { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 600; }
+  button.primary:disabled { opacity: 0.5; cursor: default; }
+  button.ghost { background: transparent; }
+  button.danger { color: var(--red); border-color: var(--red-light); }
+  input[type="text"], input[type="password"], input[type="email"], textarea {
+    font: inherit; width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--card); color: var(--ink);
+  }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+  .row { margin-bottom: 14px; }
+  label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+  .status { font-size: 0.9rem; margin-top: 10px; min-height: 1.4em; }
+  .status.ok { color: var(--teal-dark); }
+  .status.err { color: var(--red); }
+  .hidden { display: none !important; }
+
+  /* tabs */
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .tabs button.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+  /* calendar */
+  .months { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 620px) { .months { grid-template-columns: 1fr; } }
+  .cal-title { text-align: center; font-weight: 700; margin-bottom: 10px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-dow { text-align: center; font-size: 0.68rem; color: var(--ink-soft); font-weight: 600; padding: 2px 0; }
+  .cal-cell {
+    aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 8px; font-size: 0.85rem; border: 1px solid transparent;
+  }
+  .cal-cell.pad { }
+  .cal-cell.past { color: var(--border); }
+  .cal-cell.day { cursor: pointer; border-color: var(--border); }
+  .cal-cell.day:hover { border-color: var(--teal); }
+  .cal-cell.work { background: var(--teal-light); color: var(--teal-dark); font-weight: 700; }
+  .cal-cell.full { background: var(--red-light); color: var(--red); font-weight: 700; }
+  .cal-cell.sel { outline: 2px solid var(--teal); outline-offset: 1px; }
+  .cal-cell .tick { font-size: 0.6rem; margin-top: 1px; font-weight: 600; }
+
+  /* day editor */
+  .editor { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .editor.hidden { display: none; }
+  .editor-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .editor-head .d { font-weight: 700; font-size: 1rem; }
+  .hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .hour {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+  }
+  .hour .t { font-weight: 600; }
+  .hour .st { font-size: 0.72rem; padding: 2px 8px; border-radius: 999px; }
+  .hour[data-state="avail"] .st { background: var(--teal-light); color: var(--teal-dark); }
+  .hour[data-state="booked"] { border-color: var(--red-light); }
+  .hour[data-state="booked"] .st { background: var(--red-light); color: var(--red); }
+  .hour[data-state="buffer"] .st { background: var(--buffer); color: #8a7a5c; }
+  .legend { font-size: 0.8rem; color: var(--ink-soft); margin: 10px 0 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <h1>FreshHome MUC · 后台</h1>
+    <button id="logout" class="ghost hidden">退出登录</button>
+  </div>
+  <p class="muted">改动会提交到网站仓库，保存后 1–2 分钟生效。</p>
+
+  <!-- LOGIN -->
+  <div id="login" class="card">
+    <h2>登录</h2>
+    <p class="muted">需要一个只对本站仓库有权限的 GitHub Token。第一次使用：</p>
+    <ol class="muted" style="padding-left:20px">
+      <li>打开 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a></li>
+      <li>Resource owner 选 <b>huicnvictor</b>，Repository access 选 <b>Only select repositories → freshhome-muc</b></li>
+      <li>Permissions → Repository permissions → <b>Contents</b> 设为 <b>Read and write</b></li>
+      <li>Generate token，复制那串 <code>github_pat_...</code> 贴到下面</li>
+    </ol>
+    <div class="row">
+      <label for="token">GitHub Token</label>
+      <input type="password" id="token" placeholder="github_pat_..." autocomplete="off">
+    </div>
+    <label class="muted"><input type="checkbox" id="remember" checked> 记住登录（存在此浏览器）</label>
+    <div style="margin-top:12px"><button class="primary" id="loginBtn">登录</button></div>
+    <div class="status" id="loginStatus"></div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" class="hidden">
+    <div class="tabs">
+      <button data-tab="cal" class="active">预约日历</button>
+      <button data-tab="contact">联系方式</button>
+    </div>
+
+    <!-- CALENDAR TAB -->
+    <div id="tab-cal" class="card">
+      <h2>预约日历</h2>
+      <p class="muted">点日期把它设为营业日，再点时间格切换「可约 / 已约」。灰色日期是过去的，不能改。</p>
+      <div class="months" id="months"></div>
+      <div class="editor hidden" id="editor">
+        <div class="editor-head">
+          <span class="d" id="editDate"></span>
+          <button class="danger" id="removeDay">取消这天营业</button>
+        </div>
+        <div class="hours" id="hours"></div>
+        <p class="legend">「需间隔」是系统自动算的：紧挨已约时段前后一小时不可约，不用手动设。</p>
+      </div>
+      <div style="margin-top:18px">
+        <button class="primary" id="saveCal" disabled>保存日历</button>
+        <span class="muted" id="calDirty"></span>
+      </div>
+      <div class="status" id="calStatus"></div>
+    </div>
+
+    <!-- CONTACT TAB -->
+    <div id="tab-contact" class="card hidden">
+      <h2>联系方式</h2>
+      <p class="muted">留空的字段网站上会显示占位符。</p>
+      <div class="row">
+        <label for="cPhone">电话</label>
+        <input type="text" id="cPhone" placeholder="+49 151 23456789">
+      </div>
+      <div class="row">
+        <label for="cEmail">邮箱</label>
+        <input type="email" id="cEmail" placeholder="hello@example.com">
+      </div>
+      <div class="row">
+        <label for="cWa">WhatsApp（选填，填了网站会多显示一行）</label>
+        <input type="text" id="cWa" placeholder="+49 151 23456789">
+      </div>
+      <div style="margin-top:6px">
+        <button class="primary" id="saveContact" disabled>保存联系方式</button>
+        <span class="muted" id="contactDirty"></span>
+      </div>
+      <div class="status" id="contactStatus"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var OWNER = 'huicnvictor', REPO = 'freshhome-muc', BRANCH = 'main';
+  var DAY_START = 13, DAY_END = 18, BUFFER = 1;
+  var TOKEN_KEY = 'fhm-admin-token';
+
+  var token = null;
+  var avail = { obj: null, sha: null };     // availability.json
+  var content = { obj: null, sha: null };   // content.json
+  var work = {};                            // dateKey -> Set(hours booked); presence = working day
+  var calDirty = false, contactDirty = false;
+  var selKey = null;
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function b64enc(str) { return btoa(unescape(encodeURIComponent(str))); }
+  function b64dec(str) { return decodeURIComponent(escape(atob(String(str).replace(/\s/g, '')))); }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function keyOf(y, m, d) { return y + '-' + pad(m + 1) + '-' + pad(d); }
+  function parseH(s) { return s ? parseInt(String(s).split(':')[0], 10) : null; }
+  function hhmm(h) { return pad(h) + ':00'; }
+
+  async function ghGet(path) {
+    var res = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + path + '?ref=' + BRANCH + '&t=' + Date.now(), {
+      headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }
+    });
+    if (res.status === 401) throw { code: 'auth' };
+    if (res.status === 404) return { obj: null, sha: null };
+    if (!res.ok) throw { code: 'http', status: res.status };
+    var j = await res.json();
+    return { obj: JSON.parse(b64dec(j.content)), sha: j.sha };
+  }
+  async function ghPut(path, obj, sha, message) {
+    var body = {
+      message: message, branch: BRANCH,
+      content: b64enc(JSON.stringify(obj, null, 2) + '\n')
+    };
+    if (sha) body.sha = sha;
+    var res = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + path, {
+      method: 'PUT',
+      headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      var e = await res.json().catch(function () { return {}; });
+      throw { code: 'put', status: res.status, msg: e.message || '' };
+    }
+    var out = await res.json();
+    return out.content.sha;
+  }
+
+  // ---- login ----
+  function showApp() {
+    $('login').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    $('logout').classList.remove('hidden');
+  }
+  function showLogin(msg, isErr) {
+    $('app').classList.add('hidden');
+    $('logout').classList.add('hidden');
+    $('login').classList.remove('hidden');
+    var s = $('loginStatus');
+    s.textContent = msg || '';
+    s.className = 'status ' + (isErr ? 'err' : '');
+  }
+
+  async function doLogin(tok, remember) {
+    token = tok;
+    $('loginStatus').textContent = '正在验证…';
+    $('loginStatus').className = 'status';
+    try {
+      var a = await ghGet('availability.json');
+      var c = await ghGet('content.json');
+      avail = a; content = c;
+      if (remember) { try { localStorage.setItem(TOKEN_KEY, tok); } catch (e) {} }
+      loadCalFromObj();
+      loadContactFromObj();
+      renderMonths();
+      showApp();
+    } catch (err) {
+      token = null;
+      if (err && err.code === 'auth') showLogin('Token 无效或权限不足', true);
+      else showLogin('连接失败：' + (err && (err.status || err.code || err.message) || '未知错误'), true);
+    }
+  }
+
+  $('loginBtn').addEventListener('click', function () {
+    var tok = $('token').value.trim();
+    if (!tok) { $('loginStatus').textContent = '请先粘贴 Token'; $('loginStatus').className = 'status err'; return; }
+    doLogin(tok, $('remember').checked);
+  });
+  $('token').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('loginBtn').click(); });
+
+  $('logout').addEventListener('click', function () {
+    if ((calDirty || contactDirty) && !confirm('有未保存的改动，确定退出？')) return;
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    token = null; calDirty = contactDirty = false;
+    showLogin('已退出', false);
+  });
+
+  // ---- tabs ----
+  document.querySelectorAll('.tabs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.tabs button').forEach(function (x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      var t = b.getAttribute('data-tab');
+      $('tab-cal').classList.toggle('hidden', t !== 'cal');
+      $('tab-contact').classList.toggle('hidden', t !== 'contact');
+    });
+  });
+
+  // ---- calendar model ----
+  function loadCalFromObj() {
+    work = {};
+    var days = (avail.obj && avail.obj.days) || [];
+    days.forEach(function (s) {
+      if (!s || !s.date) return;
+      var set = {};
+      (s.booked || []).forEach(function (tm) {
+        var h = parseH(tm);
+        if (h !== null && !isNaN(h)) set[h] = true;
+      });
+      work[s.date] = set;
+    });
+    calDirty = false;
+    updateCalDirty();
+  }
+  function commitCalToObj() {
+    var keys = Object.keys(work).sort();
+    var days = keys.map(function (k) {
+      var set = work[k];
+      var booked = Object.keys(set).map(Number).sort(function (a, b) { return a - b; }).map(hhmm);
+      return { date: k, booked: booked };
+    });
+    if (!avail.obj) avail.obj = {};
+    avail.obj.days = days;
+  }
+  function slotState(dateKey, h) {
+    var set = work[dateKey];
+    if (!set) return 'closed';
+    if (set[h]) return 'booked';
+    for (var i = 1; i <= BUFFER; i++) { if (set[h - i] || set[h + i]) return 'buffer'; }
+    return 'avail';
+  }
+  function dayHasAvail(dateKey) {
+    for (var h = DAY_START; h <= DAY_END; h++) { if (slotState(dateKey, h) === 'avail') return true; }
+    return false;
+  }
+  function markCalDirty() { calDirty = true; updateCalDirty(); }
+  function updateCalDirty() {
+    $('saveCal').disabled = !calDirty;
+    $('calDirty').textContent = calDirty ? '有未保存的改动' : '';
+  }
+
+  // ---- calendar render ----
+  var DOW = ['一', '二', '三', '四', '五', '六', '日'];
+  var MONTHS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+  function buildMonth(year, month, today) {
+    var box = document.createElement('div');
+    var title = document.createElement('div');
+    title.className = 'cal-title';
+    title.textContent = year + '年 ' + MONTHS[month];
+    box.appendChild(title);
+    var grid = document.createElement('div');
+    grid.className = 'cal-grid';
+    DOW.forEach(function (d) {
+      var c = document.createElement('div');
+      c.className = 'cal-dow'; c.textContent = d; grid.appendChild(c);
+    });
+    var startDow = (new Date(year, month, 1).getDay() + 6) % 7;
+    var dim = new Date(year, month + 1, 0).getDate();
+    for (var i = 0; i < startDow; i++) {
+      var e = document.createElement('div'); e.className = 'cal-cell pad'; grid.appendChild(e);
+    }
+    for (var day = 1; day <= dim; day++) {
+      var cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      var k = keyOf(year, month, day);
+      var dt = new Date(year, month, day);
+      var num = document.createElement('span'); num.textContent = day; cell.appendChild(num);
+      if (dt < today) {
+        cell.className += ' past';
+      } else {
+        cell.className += ' day';
+        if (work[k]) {
+          if (dayHasAvail(k)) {
+            cell.className += ' work';
+          } else {
+            cell.className += ' full';
+            var tk = document.createElement('span'); tk.className = 'tick'; tk.textContent = '满'; cell.appendChild(tk);
+          }
+        }
+        if (k === selKey) cell.className += ' sel';
+        (function (kk) {
+          cell.addEventListener('click', function () { openEditor(kk); });
+        })(k);
+      }
+      grid.appendChild(cell);
+    }
+    box.appendChild(grid);
+    return box;
+  }
+
+  function renderMonths() {
+    var host = $('months'); host.innerHTML = '';
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var y = today.getFullYear(), m = today.getMonth();
+    host.appendChild(buildMonth(y, m, today));
+    host.appendChild(buildMonth(m === 11 ? y + 1 : y, m === 11 ? 0 : m + 1, today));
+  }
+
+  // ---- day editor ----
+  function openEditor(dateKey) {
+    selKey = dateKey;
+    if (!work[dateKey]) { work[dateKey] = {}; markCalDirty(); }
+    renderMonths();
+    renderEditor();
+  }
+  function renderEditor() {
+    if (!selKey) { $('editor').classList.add('hidden'); return; }
+    $('editor').classList.remove('hidden');
+    var p = selKey.split('-');
+    $('editDate').textContent = (+p[1]) + '月' + (+p[2]) + '日 · ' + selKey;
+    var host = $('hours'); host.innerHTML = '';
+    for (var h = DAY_START; h <= DAY_END; h++) {
+      (function (hour) {
+        var st = slotState(selKey, hour);
+        var row = document.createElement('div');
+        row.className = 'hour';
+        row.setAttribute('data-state', st);
+        var label = st === 'booked' ? '已约' : (st === 'buffer' ? '需间隔' : '可约');
+        row.innerHTML = '<span class="t">' + hhmm(hour) + '</span><span class="st">' + label + '</span>';
+        var btn = document.createElement('button');
+        btn.textContent = (work[selKey] && work[selKey][hour]) ? '设为可约' : '设为已约';
+        btn.addEventListener('click', function () {
+          var set = work[selKey];
+          if (set[hour]) delete set[hour]; else set[hour] = true;
+          markCalDirty();
+          renderEditor();
+          renderMonths();
+        });
+        row.appendChild(btn);
+        host.appendChild(row);
+      })(h);
+    }
+  }
+  $('removeDay').addEventListener('click', function () {
+    if (!selKey) return;
+    delete work[selKey];
+    markCalDirty();
+    var was = selKey; selKey = null;
+    $('editor').classList.add('hidden');
+    renderMonths();
+  });
+
+  $('saveCal').addEventListener('click', async function () {
+    var s = $('calStatus'); s.className = 'status'; s.textContent = '保存中…';
+    $('saveCal').disabled = true;
+    commitCalToObj();
+    try {
+      avail.sha = await ghPut('availability.json', avail.obj, avail.sha, 'Admin: update booking calendar');
+      calDirty = false; updateCalDirty();
+      s.className = 'status ok'; s.textContent = '已保存，网站 1–2 分钟后更新。';
+    } catch (err) {
+      s.className = 'status err';
+      s.textContent = err && err.status === 409
+        ? '保存冲突：文件在别处被改过，请刷新页面重登。'
+        : '保存失败：' + (err && (err.msg || err.status || err.code) || '未知');
+      $('saveCal').disabled = false;
+    }
+  });
+
+  // ---- contact ----
+  function loadContactFromObj() {
+    var c = content.obj || {};
+    $('cPhone').value = c.phone || '';
+    $('cEmail').value = c.email || '';
+    $('cWa').value = c.whatsapp || '';
+    contactDirty = false; updateContactDirty();
+  }
+  function markContactDirty() { contactDirty = true; updateContactDirty(); }
+  function updateContactDirty() {
+    $('saveContact').disabled = !contactDirty;
+    $('contactDirty').textContent = contactDirty ? '有未保存的改动' : '';
+  }
+  ['cPhone', 'cEmail', 'cWa'].forEach(function (id) {
+    $(id).addEventListener('input', markContactDirty);
+  });
+  $('saveContact').addEventListener('click', async function () {
+    var s = $('contactStatus'); s.className = 'status'; s.textContent = '保存中…';
+    $('saveContact').disabled = true;
+    if (!content.obj) content.obj = {};
+    content.obj.phone = $('cPhone').value.trim();
+    content.obj.email = $('cEmail').value.trim();
+    content.obj.whatsapp = $('cWa').value.trim();
+    try {
+      content.sha = await ghPut('content.json', content.obj, content.sha, 'Admin: update contact details');
+      contactDirty = false; updateContactDirty();
+      s.className = 'status ok'; s.textContent = '已保存，网站 1–2 分钟后更新。';
+    } catch (err) {
+      s.className = 'status err';
+      s.textContent = '保存失败：' + (err && (err.msg || err.status || err.code) || '未知');
+      $('saveContact').disabled = false;
+    }
+  });
+
+  window.addEventListener('beforeunload', function (e) {
+    if (calDirty || contactDirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  // ---- boot ----
+  var saved = null;
+  try { saved = localStorage.getItem(TOKEN_KEY); } catch (e) {}
+  if (saved) doLogin(saved, true);
+  else showLogin('', false);
+})();
+</script>
+</body>
+</html>

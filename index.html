@@ -932,11 +932,15 @@
       </div>
       <div class="item">
         <b data-lang-block data-lang="zh">电话：</b><b data-lang-block data-lang="en">Phone:</b><b data-lang-block data-lang="de">Telefon:</b>
-        [电话号码占位]
+        <span id="contact-phone">[电话号码占位]</span>
       </div>
       <div class="item">
         <b data-lang-block data-lang="zh">邮箱：</b><b data-lang-block data-lang="en">Email:</b><b data-lang-block data-lang="de">E-Mail:</b>
-        [邮箱地址占位]
+        <span id="contact-email">[邮箱地址占位]</span>
+      </div>
+      <div class="item" id="contact-whatsapp-row" hidden>
+        <b>WhatsApp:</b>
+        <span id="contact-whatsapp"></span>
       </div>
     </div>
   </div>
@@ -1436,6 +1440,30 @@
     .finally(function () { renderCalendar(); });
 
   document.addEventListener('langchange', renderCalendar);
+})();
+
+(function () {
+  fetch('content.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (c) {
+      if (!c) return;
+      var phone = document.getElementById('contact-phone');
+      var email = document.getElementById('contact-email');
+      var waRow = document.getElementById('contact-whatsapp-row');
+      var wa = document.getElementById('contact-whatsapp');
+      if (phone && c.phone) {
+        phone.innerHTML = '<a href="tel:' + c.phone.replace(/\s+/g, '') + '">' + c.phone + '</a>';
+      }
+      if (email && c.email) {
+        email.innerHTML = '<a href="mailto:' + c.email + '">' + c.email + '</a>';
+      }
+      if (waRow && wa && c.whatsapp) {
+        var digits = c.whatsapp.replace(/[^\d]/g, '');
+        wa.innerHTML = '<a href="https://wa.me/' + digits + '" target="_blank" rel="noopener">' + c.whatsapp + '</a>';
+        waRow.hidden = false;
+      }
+    })
+    .catch(function () {});
 })();
 </script>
 

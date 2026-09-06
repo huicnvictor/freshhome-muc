@@ -1,0 +1,6 @@
+{
+  "_comment": "网站可编辑文字。留空的字段网页会保留占位符。可在后台 admin.html 里修改，或直接改这里再 git push。",
+  "phone": "",
+  "email": "",
+  "whatsapp": ""
+}
