@@ -100,11 +100,15 @@
       <li>打开 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a></li>
       <li>Resource owner 选 <b>huicnvictor</b>，Repository access 选 <b>Only select repositories → freshhome-muc</b></li>
       <li>Permissions → Repository permissions → <b>Contents</b> 设为 <b>Read and write</b></li>
-      <li>Generate token，复制那串 <code>github_pat_...</code> 贴到下面</li>
+      <li>点最下面 <b>Generate token</b></li>
+      <li><b>生成后的那一页</b>有个绿色框和 Copy 按钮，立刻点 Copy 贴到下面。这串只显示这一次，之后在 token 列表里看到的 <code>github_pat_11…</code> 是打码的、用不了。</li>
     </ol>
     <div class="row">
-      <label for="token">GitHub Token</label>
-      <input type="password" id="token" placeholder="github_pat_..." autocomplete="off">
+      <label for="token">GitHub Token（github_pat_ 开头，很长）</label>
+      <input type="text" id="token" placeholder="github_pat_..." autocomplete="off"
+        autocapitalize="off" autocorrect="off" spellcheck="false"
+        data-1p-ignore data-lpignore="true" data-form-type="other"
+        style="font-family:ui-monospace,Menlo,Consolas,monospace">
     </div>
     <label class="muted"><input type="checkbox" id="remember" checked> 记住登录（存在此浏览器）</label>
     <div style="margin-top:12px"><button class="primary" id="loginBtn">登录</button></div>
