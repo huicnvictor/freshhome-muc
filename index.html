@@ -18,6 +18,7 @@
     --star: #e0a52c;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
@@ -598,7 +599,9 @@
         </div>
       </div>
 
-      <div class="zone-lookup">
+      <!-- 地址查询功能：暂时关闭（会把访客地址+IP 发给 OpenStreetMap/Nominatim）。
+           后期若要重新启用：去掉这个 div 的 hidden，并把下方脚本里的 FEATURE_ZONE_LOOKUP 改回 true。 -->
+      <div class="zone-lookup" hidden>
         <h4>
           <span data-lang-block data-lang="zh">查一下您的地址属于哪个区</span>
           <span data-lang-block data-lang="en">Check which zone your address is in</span>
@@ -827,7 +830,9 @@
   </div>
 </section>
 
-<section class="alt" id="reviews">
+<!-- 客户评价：暂时隐藏（目前是占位内容，挂假评价违反 §5 UWG）。
+     有真实评价后：删掉这个 section 的 hidden，把每张卡片的 [占位…] 换成真实文字，并删掉橙色 placeholder-flag 标签。 -->
+<section class="alt" id="reviews" hidden>
   <div class="wrap">
     <h2 class="section-title">
       <span data-lang-block data-lang="zh">客户评价</span>
@@ -1069,6 +1074,10 @@
 })();
 
 (function () {
+  // 地址查询功能开关。false = 不初始化、不会有任何对 Nominatim 的请求。
+  var FEATURE_ZONE_LOOKUP = false;
+  if (!FEATURE_ZONE_LOOKUP) return;
+
   var MUNICH_CENTER = { lat: 48.1374, lon: 11.5755 }; // Marienplatz
   var STRINGS = {
     zh: {
