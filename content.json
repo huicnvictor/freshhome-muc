@@ -1,6 +1,6 @@
 {
   "_comment": "网站可编辑文字。留空的字段网页会保留占位符 / 不显示。可在后台 admin.html 里修改，或直接改这里再 git push。whatsapp 填号码（网页转成 wa.me 链接），wechat 填微信号（网页直接显示）。",
-  "phone": "",
+  "phone": "+49 17621486852",
   "whatsapp": "+49 17621486852",
   "wechat": "godhappy2",
   "email": ""
