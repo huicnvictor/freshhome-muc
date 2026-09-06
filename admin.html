@@ -178,6 +178,10 @@
 
   var $ = function (id) { return document.getElementById(id); };
 
+  // GitHub tokens are ASCII [A-Za-z0-9_]; strip anything a paste may have added
+  // (spaces, curly quotes, CJK chars) so the Authorization header stays Latin-1.
+  function cleanToken(t) { return String(t || '').replace(/[^A-Za-z0-9_]/g, ''); }
+
   function b64enc(str) { return btoa(unescape(encodeURIComponent(str))); }
   function b64dec(str) { return decodeURIComponent(escape(atob(String(str).replace(/\s/g, '')))); }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -230,7 +234,8 @@
   }
 
   async function doLogin(tok, remember) {
-    token = tok;
+    token = cleanToken(tok);
+    if (!token) { showLogin('Token 格式不对，请重新复制粘贴', true); return; }
     $('loginStatus').textContent = '正在验证…';
     $('loginStatus').className = 'status';
     try {
@@ -250,7 +255,7 @@
   }
 
   $('loginBtn').addEventListener('click', function () {
-    var tok = $('token').value.trim();
+    var tok = cleanToken($('token').value);
     if (!tok) { $('loginStatus').textContent = '请先粘贴 Token'; $('loginStatus').className = 'status err'; return; }
     doLogin(tok, $('remember').checked);
   });
