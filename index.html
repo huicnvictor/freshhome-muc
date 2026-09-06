@@ -279,6 +279,10 @@
   .contact-box .im-lines small { color: var(--ink-soft); font-size: 0.72rem; }
 
   footer { padding: 28px 0; text-align: center; color: var(--ink-soft); font-size: 0.8rem; }
+  footer .footer-links { margin-top: 8px; }
+  footer .footer-links a { color: var(--ink-soft); text-decoration: underline; }
+  footer .footer-links a:hover { color: var(--teal-dark); }
+  footer .footer-links span { margin: 0 8px; }
 
   [data-lang-block] { display: none; }
   [data-lang-block].active { display: block; }
@@ -959,9 +963,16 @@
 </section>
 
 <footer>
-  <span data-lang-block data-lang="zh">© 2026 FreshHome MUC · 慕尼黑</span>
-  <span data-lang-block data-lang="en">© 2026 FreshHome MUC · Munich</span>
-  <span data-lang-block data-lang="de">© 2026 FreshHome MUC · München</span>
+  <div>
+    <span data-lang-block data-lang="zh">© 2026 FreshHome MUC · 慕尼黑</span>
+    <span data-lang-block data-lang="en">© 2026 FreshHome MUC · Munich</span>
+    <span data-lang-block data-lang="de">© 2026 FreshHome MUC · München</span>
+  </div>
+  <div class="footer-links">
+    <a href="impressum.html">Impressum</a>
+    <span aria-hidden="true">·</span>
+    <a href="datenschutz.html">Datenschutz</a>
+  </div>
 </footer>
 
 <div class="lightbox" id="lightbox">
