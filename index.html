@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n-title>FreshHome MUC · 慕尼黑退房清洁</title>
+<style>
+  :root {
+    --teal: #1f7a6c;
+    --teal-dark: #145a4f;
+    --teal-light: #e6f3f0;
+    --ink: #1c2523;
+    --ink-soft: #5b6764;
+    --bg: #fbfaf8;
+    --card: #ffffff;
+    --border: #e4e0d8;
+    --star: #e0a52c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* header */
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(251,250,248,0.92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .brand { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.01em; }
+  .brand .placeholder-tag { color: var(--ink-soft); font-weight: 400; font-size: 0.75rem; display: block; margin-top: 2px; }
+  .lang-switch { display: flex; gap: 6px; background: var(--teal-light); padding: 4px; border-radius: 999px; }
+  .lang-switch button {
+    border: none; background: transparent; padding: 6px 14px; border-radius: 999px;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer; color: var(--teal-dark);
+  }
+  .lang-switch button.active { background: var(--teal); color: #fff; }
+
+  /* hero */
+  .hero { padding: 72px 0 56px; text-align: center; }
+  .hero h1 { font-size: 2.1rem; margin: 0 0 14px; }
+  .hero .service-city { color: var(--teal); font-weight: 700; }
+  .hero p.sub { font-size: 1.05rem; color: var(--ink-soft); max-width: 560px; margin: 0 auto 28px; }
+  .cta-btn {
+    display: inline-block; background: var(--teal); color: #fff; text-decoration: none;
+    padding: 13px 28px; border-radius: 8px; font-weight: 600; font-size: 0.95rem;
+  }
+  .cta-btn:hover { background: var(--teal-dark); }
+
+  section { padding: 56px 0; }
+  section.alt { background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  h2.section-title { font-size: 1.5rem; text-align: center; margin: 0 0 8px; }
+  p.section-sub { text-align: center; color: var(--ink-soft); margin: 0 0 36px; }
+
+  /* services */
+  .service-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 32px; max-width: 640px; margin: 0 auto;
+  }
+  .service-card + .service-card { margin-top: 20px; }
+  .service-card h3 { margin-top: 0; font-size: 1.2rem; }
+  .service-warn {
+    margin-top: 18px; font-size: 0.88rem; line-height: 1.55; color: #8a4b00;
+    background: #fdf1de; border: 1px solid #f0d9b5; border-radius: 8px; padding: 12px 16px;
+  }
+  .service-warn b { color: #7a3d00; }
+  .sofa-prices { margin: 20px 0 0; display: grid; gap: 0; }
+  .sofa-prices .sp-row {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    font-size: 0.93rem; padding: 9px 0; border-bottom: 1px dashed var(--border);
+  }
+  .sofa-prices .sp-row:last-child { border-bottom: none; }
+  .sofa-prices .sp-price { font-weight: 700; color: var(--teal); white-space: nowrap; }
+  .sofa-prices .sp-ask { margin: 10px 0 0; font-size: 0.85rem; color: var(--ink-soft); }
+  .service-card ul { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 12px; }
+  .service-card li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.95rem; }
+  .service-card li::before { content: "✓"; color: var(--teal); font-weight: 700; flex-shrink: 0; }
+  .note-soon {
+    text-align: center; margin: 20px auto 0; max-width: 640px; font-size: 0.85rem;
+    color: var(--ink-soft); background: var(--teal-light); border-radius: 8px; padding: 10px 16px;
+  }
+
+  /* pricing */
+  .price-layout {
+    display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; justify-content: center;
+    max-width: 1000px; margin: 0 auto;
+  }
+  .price-main { flex: 1 1 460px; min-width: 0; }
+  .price-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;
+  }
+  .price-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 28px 24px; text-align: center;
+  }
+  .price-card .zone-label { font-weight: 700; margin-bottom: 4px; }
+  .price-card .zone-sub { font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 16px; }
+  .price-card .price { font-size: 2.1rem; font-weight: 700; color: var(--teal); line-height: 1; }
+  .price-card .price .unit { font-size: 0.95rem; font-weight: 500; color: var(--ink-soft); }
+  .price-card .min-hours { margin-top: 10px; font-size: 0.85rem; color: var(--ink-soft); }
+  .price-card .pet-add { margin-top: 6px; font-size: 0.82rem; font-weight: 600; color: var(--teal-dark); }
+  .price-notes { max-width: 640px; margin: 24px auto 0; display: grid; gap: 10px; }
+  .price-notes p {
+    margin: 0; text-align: center; font-size: 0.85rem; color: var(--ink-soft);
+    background: var(--teal-light); border-radius: 8px; padding: 10px 16px;
+  }
+  .price-notes p.highlight {
+    font-size: 0.98rem; font-weight: 600; color: var(--ink);
+    border: 1px solid var(--teal); padding: 14px 18px;
+  }
+  .price-notes p.highlight::before {
+    content: "🧽 "; font-weight: 400;
+  }
+
+  /* zone lookup */
+  .zone-lookup {
+    flex: 1 1 320px; min-width: 0; max-width: 400px; align-self: stretch;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px;
+  }
+  .zone-lookup h4 { margin: 0 0 4px; font-size: 1rem; }
+  .zone-lookup .zl-hint { margin: 0 0 14px; font-size: 0.8rem; color: var(--ink-soft); }
+  .zone-lookup form { display: flex; gap: 8px; }
+  .zone-lookup input[type="text"] {
+    flex: 1; min-width: 0; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+    font-size: 0.9rem; font-family: inherit;
+  }
+  .zone-lookup input[type="text"]:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
+  .zone-lookup button[type="submit"] {
+    background: var(--teal); color: #fff; border: none; border-radius: 8px;
+    padding: 10px 18px; font-size: 0.9rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+  }
+  .zone-lookup button[type="submit"]:hover { background: var(--teal-dark); }
+  .zone-lookup button[type="submit"]:disabled { opacity: 0.6; cursor: default; }
+  .zl-result { margin-top: 16px; font-size: 0.9rem; display: none; }
+  .zl-result.show { display: block; }
+  .zl-result .zl-zone { font-weight: 700; color: var(--teal-dark); font-size: 1.05rem; }
+  .zl-result .zl-detail { color: var(--ink-soft); margin-top: 4px; }
+  .zl-result .zl-disclaimer {
+    margin-top: 10px; font-size: 0.75rem; color: var(--ink-soft);
+    background: var(--teal-light); border-radius: 6px; padding: 8px 10px;
+  }
+  .zl-result.zl-error .zl-zone { color: #b3402c; }
+
+  /* before/after */
+  .ba-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+  .ba-pair { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .ba-pair .ba-label { padding: 12px 16px 0; font-weight: 600; font-size: 0.9rem; }
+  .ba-images { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin-top: 10px; }
+  .ba-slot { position: relative; aspect-ratio: 4/3; overflow: hidden; background: var(--teal-light); }
+  .ba-slot img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; }
+  .ba-slot .fallback {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 6px; color: var(--teal-dark); font-size: 0.78rem; text-align: center; padding: 8px;
+  }
+  .ba-slot .fallback svg { width: 28px; height: 28px; opacity: 0.6; }
+  .ba-slot .tag {
+    position: absolute; top: 8px; left: 8px; background: rgba(28,37,35,0.72); color: #fff;
+    font-size: 0.68rem; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.03em;
+  }
+  .ba-pair.wide { grid-column: 1 / -1; }
+  .ba-images-single { grid-template-columns: 1fr; }
+  .ba-slot-multi { display: grid; gap: 1px; background: var(--border); aspect-ratio: unset; }
+  .ba-slot-multi.cols-2 { grid-template-columns: 1fr 1fr; }
+  .ba-slot-multi.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .ba-slot-multi .ba-slot { aspect-ratio: 3/4; }
+
+  /* reviews */
+  .review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .review-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .stars { color: var(--star); letter-spacing: 2px; margin-bottom: 10px; }
+  .review-quote { font-size: 0.92rem; color: var(--ink); margin: 0 0 14px; }
+  .review-name { font-size: 0.82rem; color: var(--ink-soft); font-weight: 600; }
+  .placeholder-flag {
+    display: inline-block; margin-top: 8px; font-size: 0.68rem; color: #b06a00;
+    background: #fdf1de; padding: 2px 8px; border-radius: 999px;
+  }
+
+  /* contact */
+  .contact-box {
+    max-width: 560px; margin: 0 auto; background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 32px; text-align: center;
+  }
+  .contact-box .item { margin: 10px 0; font-size: 0.95rem; }
+  .contact-box .item b { color: var(--teal-dark); }
+
+  footer { padding: 28px 0; text-align: center; color: var(--ink-soft); font-size: 0.8rem; }
+
+  [data-lang-block] { display: none; }
+  [data-lang-block].active { display: block; }
+  span[data-lang-block].active { display: inline; }
+
+  /* lightbox */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(15,20,19,0.92); align-items: center; justify-content: center;
+    padding: 40px 20px; cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+    border-radius: 6px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .lightbox .lb-close {
+    position: absolute; top: 18px; right: 22px; width: 40px; height: 40px;
+    border-radius: 50%; background: rgba(255,255,255,0.12); border: none;
+    color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer;
+  }
+  .lightbox .lb-close:hover { background: rgba(255,255,255,0.24); }
+  .lightbox .lb-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,0.12);
+    border: none; color: #fff; font-size: 1.4rem; line-height: 1; cursor: pointer;
+  }
+  .lightbox .lb-nav:hover { background: rgba(255,255,255,0.24); }
+  .lightbox .lb-prev { left: 18px; }
+  .lightbox .lb-next { right: 18px; }
+  .lightbox .lb-nav[hidden] { display: none; }
+  .lightbox .lb-counter {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.8); font-size: 0.8rem; letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.6rem; }
+    .ba-images { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">FreshHome MUC</div>
+    <div class="lang-switch">
+      <button type="button" data-set-lang="zh">中</button>
+      <button type="button" data-set-lang="en">EN</button>
+      <button type="button" data-set-lang="de">DE</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>
+      <span data-lang-block data-lang="zh">慕尼黑<span class="service-city">退房清洁</span>服务</span>
+      <span data-lang-block data-lang="en">Move-out Cleaning in <span class="service-city">Munich</span></span>
+      <span data-lang-block data-lang="de">Endreinigung in <span class="service-city">München</span></span>
+    </h1>
+    <p class="sub">
+      <span data-lang-block data-lang="zh">专注退房清洁，专业打扫每个角落，帮您省心省时间，也尽量帮您多拿回一些押金。</span>
+      <span data-lang-block data-lang="en">Professional move-out cleaning, done thoroughly — save time and hassle, with the best shot at getting your deposit back.</span>
+      <span data-lang-block data-lang="de">Professionelle Endreinigung, gründlich erledigt — spart Ihnen Zeit und Aufwand und gibt Ihnen die besten Chancen auf Ihre Kaution zurück.</span>
+    </p>
+    <a href="#pricing" class="cta-btn">
+      <span data-lang-block data-lang="zh">获取报价</span>
+      <span data-lang-block data-lang="en">Get a quote</span>
+      <span data-lang-block data-lang="de">Angebot anfragen</span>
+    </a>
+  </div>
+</section>
+
+<section class="alt" id="services">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-lang-block data-lang="zh">服务内容</span>
+      <span data-lang-block data-lang="en">Our service</span>
+      <span data-lang-block data-lang="de">Unser Service</span>
+    </h2>
+    <p class="section-sub">
+      <span data-lang-block data-lang="zh">退房清洁为主，另提供地毯、沙发和床垫清洁，每个细节都做到位</span>
+      <span data-lang-block data-lang="en">Move-out cleaning first, plus carpet, sofa and mattress cleaning, every detail done properly</span>
+      <span data-lang-block data-lang="de">Endreinigung im Fokus, dazu Teppich-, Sofa- und Matratzenreinigung, jedes Detail sorgfältig</span>
+    </p>
+
+    <div class="service-card">
+      <h3>
+        <span data-lang-block data-lang="zh">退房清洁 Endreinigung</span>
+        <span data-lang-block data-lang="en">Move-out Cleaning</span>
+        <span data-lang-block data-lang="de">Endreinigung</span>
+      </h3>
+      <ul>
+        <li>
+          <span data-lang-block data-lang="zh">按需求清洁，按房东收房高标准执行</span>
+          <span data-lang-block data-lang="en">Cleaning tailored to your needs, done to the landlord's highest move-out standard</span>
+          <span data-lang-block data-lang="de">Individuell auf Ihre Bedürfnisse abgestimmt, nach dem höchsten Übergabestandard des Vermieters</span>
+        </li>
+        <li>
+          <span data-lang-block data-lang="zh">厨房深度清洁（油烟机、烤箱、冰箱内外）</span>
+          <span data-lang-block data-lang="en">Deep kitchen cleaning (hood, oven, fridge inside &amp; out)</span>
+          <span data-lang-block data-lang="de">Gründliche Küchenreinigung (Dunstabzugshaube, Backofen, Kühlschrank innen &amp; außen)</span>
+        </li>
+        <li>
+          <span data-lang-block data-lang="zh">卫生间除垢消毒</span>
+          <span data-lang-block data-lang="en">Bathroom descaling &amp; disinfection</span>
+          <span data-lang-block data-lang="de">Badezimmer entkalkt &amp; desinfiziert</span>
+        </li>
+        <li>
+          <span data-lang-block data-lang="zh">地板、门窗全面擦拭</span>
+          <span data-lang-block data-lang="en">Floors, doors &amp; windows wiped down</span>
+          <span data-lang-block data-lang="de">Böden, Türen &amp; Fenster gewischt</span>
+        </li>
+        <li>
+          <span data-lang-block data-lang="zh">开关、踢脚线除尘</span>
+          <span data-lang-block data-lang="en">Switches &amp; skirting boards dusted</span>
+          <span data-lang-block data-lang="de">Schalter &amp; Fußleisten entstaubt</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="service-card">
+      <h3>
+        <span data-lang-block data-lang="zh">地毯、沙发和床垫清洁</span>
+        <span data-lang-block data-lang="en">Carpet, Sofa &amp; Mattress Cleaning</span>
+        <span data-lang-block data-lang="de">Teppich-, Sofa- &amp; Matratzenreinigung</span>
+      </h3>
+      <ul>
+        <li>
+          <span data-lang-block data-lang="zh">日常污渍清洁（Alltägliche Flecken）</span>
+          <span data-lang-block data-lang="en">Everyday stains (Alltägliche Flecken)</span>
+          <span data-lang-block data-lang="de">Alltägliche Flecken</span>
+        </li>
+        <li>
+          <span data-lang-block data-lang="zh">吸尘抽吸、除尘除螨（Vakuum-Absaugung）</span>
+          <span data-lang-block data-lang="en">Vacuum extraction, dust and mite removal (Vakuum-Absaugung)</span>
+          <span data-lang-block data-lang="de">Vakuum-Absaugung, Staub- und Milbenentfernung</span>
+        </li>
+        <li>
+          <span data-lang-block data-lang="zh">轻度异味去除（Leichte Gerüche）</span>
+          <span data-lang-block data-lang="en">Light odours (Leichte Gerüche)</span>
+          <span data-lang-block data-lang="de">Leichte Gerüche</span>
+        </li>
+        <li>
+          <span data-lang-block data-lang="zh">上门清洁，自然晾干后即可正常使用</span>
+          <span data-lang-block data-lang="en">Done at your home, ready to use once dry</span>
+          <span data-lang-block data-lang="de">Reinigung bei Ihnen zu Hause, nach dem Trocknen wieder nutzbar</span>
+        </li>
+      </ul>
+
+      <div class="sofa-prices">
+        <div class="sp-row">
+          <span>
+            <span data-lang-block data-lang="zh">单人沙发</span>
+            <span data-lang-block data-lang="en">1-seat sofa</span>
+            <span data-lang-block data-lang="de">1-Sitzer-Sofa</span>
+          </span>
+          <span class="sp-price">€30 <span data-lang-block data-lang="zh">/ 件</span><span data-lang-block data-lang="en">/ item</span><span data-lang-block data-lang="de">/ Stück</span></span>
+        </div>
+        <div class="sp-row">
+          <span>
+            <span data-lang-block data-lang="zh">双人沙发</span>
+            <span data-lang-block data-lang="en">2-seat sofa</span>
+            <span data-lang-block data-lang="de">2-Sitzer-Sofa</span>
+          </span>
+          <span class="sp-price">€60 <span data-lang-block data-lang="zh">/ 件</span><span data-lang-block data-lang="en">/ item</span><span data-lang-block data-lang="de">/ Stück</span></span>
+        </div>
+        <div class="sp-row">
+          <span>
+            <span data-lang-block data-lang="zh">三人沙发</span>
+            <span data-lang-block data-lang="en">3-seat sofa</span>
+            <span data-lang-block data-lang="de">3-Sitzer-Sofa</span>
+          </span>
+          <span class="sp-price">€90 <span data-lang-block data-lang="zh">/ 件</span><span data-lang-block data-lang="en">/ item</span><span data-lang-block data-lang="de">/ Stück</span></span>
+        </div>
+        <div class="sp-row">
+          <span>
+            <span data-lang-block data-lang="zh">L 型沙发</span>
+            <span data-lang-block data-lang="en">L-shaped sofa</span>
+            <span data-lang-block data-lang="de">L-Form-Sofa</span>
+          </span>
+          <span class="sp-price">€120–150</span>
+        </div>
+        <div class="sp-row">
+          <span>
+            <span data-lang-block data-lang="zh">单人床垫（90×200 cm）</span>
+            <span data-lang-block data-lang="en">Single mattress (90×200 cm)</span>
+            <span data-lang-block data-lang="de">Einzelmatratze (90×200 cm)</span>
+          </span>
+          <span class="sp-price">€40 <span data-lang-block data-lang="zh">/ 件</span><span data-lang-block data-lang="en">/ item</span><span data-lang-block data-lang="de">/ Stück</span></span>
+        </div>
+        <div class="sp-row">
+          <span>
+            <span data-lang-block data-lang="zh">双人床垫（140×200 cm）</span>
+            <span data-lang-block data-lang="en">Double mattress (140×200 cm)</span>
+            <span data-lang-block data-lang="de">Doppelmatratze (140×200 cm)</span>
+          </span>
+          <span class="sp-price">€80 <span data-lang-block data-lang="zh">/ 件</span><span data-lang-block data-lang="en">/ item</span><span data-lang-block data-lang="de">/ Stück</span></span>
+        </div>
+      </div>
+      <p class="sp-ask">
+        <span data-lang-block data-lang="zh">地毯清洁按面积报价。如有特殊需求，请先联系我们询问。</span>
+        <span data-lang-block data-lang="en">Carpet cleaning is quoted by area. For special requirements, please ask us first.</span>
+        <span data-lang-block data-lang="de">Teppichreinigung wird nach Fläche berechnet. Bei besonderen Anforderungen bitte vorab anfragen.</span>
+      </p>
+
+      <p class="service-warn">
+        <span data-lang-block data-lang="zh">此服务仅针对普通毛毯和布艺沙发。<b>如果您的沙发是奢侈品牌或特殊昂贵面料（真皮、丝绒、羊毛等），请暂时不要选择此项服务</b>，以免造成损伤。</span>
+        <span data-lang-block data-lang="en">This service is for ordinary rugs and fabric sofas only. <b>If your sofa is a luxury brand or made of special, expensive material (leather, velvet, wool, etc.), please do not book this service for now</b>, to avoid damage.</span>
+        <span data-lang-block data-lang="de">Dieser Service gilt nur für normale Teppiche und Stoffsofas. <b>Ist Ihr Sofa von einer Luxusmarke oder aus besonderem, teurem Material (Leder, Samt, Wolle usw.), buchen Sie diesen Service bitte vorerst nicht</b>, um Schäden zu vermeiden.</span>
+      </p>
+    </div>
+
+    <p class="note-soon">
+      <span data-lang-block data-lang="zh">开荒打扫等其他服务后续开放，敬请期待</span>
+      <span data-lang-block data-lang="en">More services (e.g. post-renovation cleaning) coming later</span>
+      <span data-lang-block data-lang="de">Weitere Services (z. B. Baureinigung) folgen bald</span>
+    </p>
+  </div>
+</section>
+
+<section class="alt" id="pricing">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-lang-block data-lang="zh">价目表</span>
+      <span data-lang-block data-lang="en">Pricing</span>
+      <span data-lang-block data-lang="de">Preise</span>
+    </h2>
+    <p class="section-sub">
+      <span data-lang-block data-lang="zh">按小时计费，价格清清楚楚</span>
+      <span data-lang-block data-lang="en">Billed by the hour, no surprises</span>
+      <span data-lang-block data-lang="de">Abrechnung nach Stunden, transparent und fair</span>
+    </p>
+
+    <div class="price-layout">
+      <div class="price-main">
+        <div class="price-grid">
+          <div class="price-card">
+            <div class="zone-label">
+              <span data-lang-block data-lang="zh">慕尼黑 M 圈以内</span>
+              <span data-lang-block data-lang="en">Inside Munich's M-Ring</span>
+              <span data-lang-block data-lang="de">Innerhalb des Münchner Mittleren Rings</span>
+            </div>
+            <div class="zone-sub">
+              <span data-lang-block data-lang="zh">Mittlerer Ring 范围内</span>
+              <span data-lang-block data-lang="en">Mittlerer Ring area</span>
+              <span data-lang-block data-lang="de">Innerhalb des Mittleren Rings</span>
+            </div>
+            <div class="price">
+              €30 <span class="unit">
+                <span data-lang-block data-lang="zh">/ 小时</span>
+                <span data-lang-block data-lang="en">/ hour</span>
+                <span data-lang-block data-lang="de">/ Stunde</span>
+              </span>
+            </div>
+            <div class="min-hours">
+              <span data-lang-block data-lang="zh">最低预约 3 小时起</span>
+              <span data-lang-block data-lang="en">Minimum booking: 3 hours</span>
+              <span data-lang-block data-lang="de">Mindestbuchung: 3 Stunden</span>
+            </div>
+            <div class="pet-add">
+              <span data-lang-block data-lang="zh">有宠物 +€5 / 小时</span>
+              <span data-lang-block data-lang="en">With pets +€5 / hour</span>
+              <span data-lang-block data-lang="de">Mit Haustieren +5 € / Std.</span>
+            </div>
+          </div>
+
+          <div class="price-card">
+            <div class="zone-label">
+              <span data-lang-block data-lang="zh">M 圈以外</span>
+              <span data-lang-block data-lang="en">Outside the M-Ring</span>
+              <span data-lang-block data-lang="de">Außerhalb des Mittleren Rings</span>
+            </div>
+            <div class="zone-sub">
+              <span data-lang-block data-lang="zh">MVV 1-2 区</span>
+              <span data-lang-block data-lang="en">MVV zones 1–2</span>
+              <span data-lang-block data-lang="de">MVV-Zonen 1–2</span>
+            </div>
+            <div class="price">
+              €35 <span class="unit">
+                <span data-lang-block data-lang="zh">/ 小时</span>
+                <span data-lang-block data-lang="en">/ hour</span>
+                <span data-lang-block data-lang="de">/ Stunde</span>
+              </span>
+            </div>
+            <div class="min-hours">
+              <span data-lang-block data-lang="zh">最低预约 4 小时起</span>
+              <span data-lang-block data-lang="en">Minimum booking: 4 hours</span>
+              <span data-lang-block data-lang="de">Mindestbuchung: 4 Stunden</span>
+            </div>
+            <div class="pet-add">
+              <span data-lang-block data-lang="zh">有宠物 +€5 / 小时</span>
+              <span data-lang-block data-lang="en">With pets +€5 / hour</span>
+              <span data-lang-block data-lang="de">Mit Haustieren +5 € / Std.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-notes">
+          <p class="highlight">
+            <span data-lang-block data-lang="zh">清洁剂和清洁工具我们自备，您只需要留一台吸尘器</span>
+            <span data-lang-block data-lang="en">We bring our own cleaning products and tools. Just leave out a vacuum cleaner</span>
+            <span data-lang-block data-lang="de">Reinigungsmittel und Werkzeug bringen wir mit. Sie müssen nur einen Staubsauger bereitstellen</span>
+          </p>
+          <p class="highlight">
+            <span data-lang-block data-lang="zh">退房清洁与地毯或沙发清洁一起预约时，总价 €300 起，这种情况我们可自带吸尘器</span>
+            <span data-lang-block data-lang="en">When move-out cleaning is booked together with carpet or sofa cleaning, the total starts at €300, and in this case we bring our own vacuum cleaner</span>
+            <span data-lang-block data-lang="de">Bei gemeinsamer Buchung von Endreinigung und Teppich- oder Sofareinigung beträgt der Gesamtpreis mindestens 300 €; in diesem Fall bringen wir einen Staubsauger mit</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="zone-lookup">
+        <h4>
+          <span data-lang-block data-lang="zh">查一下您的地址属于哪个区</span>
+          <span data-lang-block data-lang="en">Check which zone your address is in</span>
+          <span data-lang-block data-lang="de">Prüfen Sie, in welcher Zone Ihre Adresse liegt</span>
+        </h4>
+        <p class="zl-hint">
+          <span data-lang-block data-lang="zh">输入地址，估算属于 M 圈还是哪个 zone</span>
+          <span data-lang-block data-lang="en">Enter an address to estimate the M-Ring / zone</span>
+          <span data-lang-block data-lang="de">Adresse eingeben, um M-Ring / Zone zu schätzen</span>
+        </p>
+        <form id="zl-form">
+          <input type="text" id="zl-input" required
+            data-i18n-placeholder-zh="例如：Marienplatz 1, München"
+            data-i18n-placeholder-en="e.g. Marienplatz 1, Munich"
+            data-i18n-placeholder-de="z. B. Marienplatz 1, München">
+          <button type="submit" id="zl-submit">
+            <span data-lang-block data-lang="zh">查询</span>
+            <span data-lang-block data-lang="en">Check</span>
+            <span data-lang-block data-lang="de">Prüfen</span>
+          </button>
+        </form>
+        <div class="zl-result" id="zl-result"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="before-after">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-lang-block data-lang="zh">清洁前后对比</span>
+      <span data-lang-block data-lang="en">Before &amp; After</span>
+      <span data-lang-block data-lang="de">Vorher &amp; Nachher</span>
+    </h2>
+    <p class="section-sub">
+      <span data-lang-block data-lang="zh">真实案例，效果一目了然</span>
+      <span data-lang-block data-lang="en">Real cases, real results</span>
+      <span data-lang-block data-lang="de">Echte Fälle, echte Ergebnisse</span>
+    </p>
+
+    <div class="ba-grid">
+      <div class="ba-pair">
+        <div class="ba-label">
+          <span data-lang-block data-lang="zh">卫生间</span>
+          <span data-lang-block data-lang="en">Bathroom</span>
+          <span data-lang-block data-lang="de">Badezimmer</span>
+        </div>
+        <div class="ba-images">
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁前</span>
+            <span class="tag" data-lang-block data-lang="en">Before</span>
+            <span class="tag" data-lang-block data-lang="de">Vorher</span>
+            <img src="images/group1-bathroom-before.jpg" alt="before">
+          </div>
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁后</span>
+            <span class="tag" data-lang-block data-lang="en">After</span>
+            <span class="tag" data-lang-block data-lang="de">Nachher</span>
+            <img src="images/group1-bathroom-after.jpg" alt="after">
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-label">
+          <span data-lang-block data-lang="zh">房间</span>
+          <span data-lang-block data-lang="en">Room</span>
+          <span data-lang-block data-lang="de">Zimmer</span>
+        </div>
+        <div class="ba-images">
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁前</span>
+            <span class="tag" data-lang-block data-lang="en">Before</span>
+            <span class="tag" data-lang-block data-lang="de">Vorher</span>
+            <img src="images/group2-room-before.jpg" alt="before">
+          </div>
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁后</span>
+            <span class="tag" data-lang-block data-lang="en">After</span>
+            <span class="tag" data-lang-block data-lang="de">Nachher</span>
+            <img src="images/group2-room-after.jpg" alt="after">
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-label">
+          <span data-lang-block data-lang="zh">阳台</span>
+          <span data-lang-block data-lang="en">Balcony</span>
+          <span data-lang-block data-lang="de">Balkon</span>
+        </div>
+        <div class="ba-images">
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁前</span>
+            <span class="tag" data-lang-block data-lang="en">Before</span>
+            <span class="tag" data-lang-block data-lang="de">Vorher</span>
+            <img src="images/group3-balcony-before.jpg" alt="before">
+          </div>
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁后</span>
+            <span class="tag" data-lang-block data-lang="en">After</span>
+            <span class="tag" data-lang-block data-lang="de">Nachher</span>
+            <img src="images/group3-balcony-after.jpg" alt="after">
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-label">
+          <span data-lang-block data-lang="zh">淋浴间</span>
+          <span data-lang-block data-lang="en">Shower</span>
+          <span data-lang-block data-lang="de">Dusche</span>
+        </div>
+        <div class="ba-images">
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁前</span>
+            <span class="tag" data-lang-block data-lang="en">Before</span>
+            <span class="tag" data-lang-block data-lang="de">Vorher</span>
+            <img src="images/group4-shower-before.jpg" alt="before">
+          </div>
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁后</span>
+            <span class="tag" data-lang-block data-lang="en">After</span>
+            <span class="tag" data-lang-block data-lang="de">Nachher</span>
+            <img src="images/group4-shower-after.jpg" alt="after">
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-label">
+          <span data-lang-block data-lang="zh">花洒除垢</span>
+          <span data-lang-block data-lang="en">Shower head</span>
+          <span data-lang-block data-lang="de">Duschkopf</span>
+        </div>
+        <div class="ba-images">
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁前</span>
+            <span class="tag" data-lang-block data-lang="en">Before</span>
+            <span class="tag" data-lang-block data-lang="de">Vorher</span>
+            <img src="images/group6-showerhead-before.jpg" alt="before">
+          </div>
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁后</span>
+            <span class="tag" data-lang-block data-lang="en">After</span>
+            <span class="tag" data-lang-block data-lang="de">Nachher</span>
+            <img src="images/group6-showerhead-after.jpg" alt="after">
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-label">
+          <span data-lang-block data-lang="zh">厨房</span>
+          <span data-lang-block data-lang="en">Kitchen</span>
+          <span data-lang-block data-lang="de">Küche</span>
+        </div>
+        <div class="ba-images">
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁前</span>
+            <span class="tag" data-lang-block data-lang="en">Before</span>
+            <span class="tag" data-lang-block data-lang="de">Vorher</span>
+            <img src="images/group7-kitchen-before.jpg" alt="before">
+          </div>
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁后</span>
+            <span class="tag" data-lang-block data-lang="en">After</span>
+            <span class="tag" data-lang-block data-lang="de">Nachher</span>
+            <img src="images/group7-kitchen-after.jpg" alt="after">
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-pair">
+        <div class="ba-label">
+          <span data-lang-block data-lang="zh">淋浴瓷砖</span>
+          <span data-lang-block data-lang="en">Shower tiles</span>
+          <span data-lang-block data-lang="de">Duschfliesen</span>
+        </div>
+        <div class="ba-images">
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁前</span>
+            <span class="tag" data-lang-block data-lang="en">Before</span>
+            <span class="tag" data-lang-block data-lang="de">Vorher</span>
+            <img src="images/group8-showertile-before.jpg" alt="before">
+          </div>
+          <div class="ba-slot">
+            <span class="tag" data-lang-block data-lang="zh">清洁后</span>
+            <span class="tag" data-lang-block data-lang="en">After</span>
+            <span class="tag" data-lang-block data-lang="de">Nachher</span>
+            <img src="images/group8-showertile-after.jpg" alt="after">
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-pair wide">
+        <div class="ba-label">
+          <span data-lang-block data-lang="zh">全屋整体</span>
+          <span data-lang-block data-lang="en">Whole apartment</span>
+          <span data-lang-block data-lang="de">Gesamte Wohnung</span>
+        </div>
+        <div class="ba-images ba-images-single">
+          <div class="ba-slot-multi cols-3">
+            <div class="ba-slot">
+              <span class="tag" data-lang-block data-lang="zh">客厅</span>
+              <span class="tag" data-lang-block data-lang="en">Living room</span>
+              <span class="tag" data-lang-block data-lang="de">Wohnzimmer</span>
+              <img src="images/group5-whole-after-3.jpg" alt="living room">
+            </div>
+            <div class="ba-slot">
+              <span class="tag" data-lang-block data-lang="zh">厨房</span>
+              <span class="tag" data-lang-block data-lang="en">Kitchen</span>
+              <span class="tag" data-lang-block data-lang="de">Küche</span>
+              <img src="images/group5-whole-after-2.jpg" alt="kitchen">
+            </div>
+            <div class="ba-slot">
+              <span class="tag" data-lang-block data-lang="zh">浴室</span>
+              <span class="tag" data-lang-block data-lang="en">Bathroom</span>
+              <span class="tag" data-lang-block data-lang="de">Badezimmer</span>
+              <img src="images/group5-whole-after-1.jpg" alt="bathroom">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="reviews">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-lang-block data-lang="zh">客户评价</span>
+      <span data-lang-block data-lang="en">Customer reviews</span>
+      <span data-lang-block data-lang="de">Kundenbewertungen</span>
+    </h2>
+    <p class="section-sub">
+      <span data-lang-block data-lang="zh">以下为占位内容，替换成真实评价后删除橙色标签</span>
+      <span data-lang-block data-lang="en">Placeholder content below — remove the orange tag once replaced with real reviews</span>
+      <span data-lang-block data-lang="de">Platzhalterinhalt — Tag entfernen, sobald echte Bewertungen eingetragen sind</span>
+    </p>
+
+    <div class="review-grid">
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-quote">
+          <span data-lang-block data-lang="zh">[占位评价内容]</span>
+          <span data-lang-block data-lang="en">[Placeholder review text]</span>
+          <span data-lang-block data-lang="de">[Platzhalter-Bewertungstext]</span>
+        </p>
+        <div class="review-name">
+          <span data-lang-block data-lang="zh">[客户姓名占位]</span>
+          <span data-lang-block data-lang="en">[Customer name]</span>
+          <span data-lang-block data-lang="de">[Kundenname]</span>
+        </div>
+        <span class="placeholder-flag">
+          <span data-lang-block data-lang="zh">占位，待替换</span>
+          <span data-lang-block data-lang="en">Placeholder</span>
+          <span data-lang-block data-lang="de">Platzhalter</span>
+        </span>
+      </div>
+
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-quote">
+          <span data-lang-block data-lang="zh">[占位评价内容]</span>
+          <span data-lang-block data-lang="en">[Placeholder review text]</span>
+          <span data-lang-block data-lang="de">[Platzhalter-Bewertungstext]</span>
+        </p>
+        <div class="review-name">
+          <span data-lang-block data-lang="zh">[客户姓名占位]</span>
+          <span data-lang-block data-lang="en">[Customer name]</span>
+          <span data-lang-block data-lang="de">[Kundenname]</span>
+        </div>
+        <span class="placeholder-flag">
+          <span data-lang-block data-lang="zh">占位，待替换</span>
+          <span data-lang-block data-lang="en">Placeholder</span>
+          <span data-lang-block data-lang="de">Platzhalter</span>
+        </span>
+      </div>
+
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p class="review-quote">
+          <span data-lang-block data-lang="zh">[占位评价内容]</span>
+          <span data-lang-block data-lang="en">[Placeholder review text]</span>
+          <span data-lang-block data-lang="de">[Platzhalter-Bewertungstext]</span>
+        </p>
+        <div class="review-name">
+          <span data-lang-block data-lang="zh">[客户姓名占位]</span>
+          <span data-lang-block data-lang="en">[Customer name]</span>
+          <span data-lang-block data-lang="de">[Kundenname]</span>
+        </div>
+        <span class="placeholder-flag">
+          <span data-lang-block data-lang="zh">占位，待替换</span>
+          <span data-lang-block data-lang="en">Placeholder</span>
+          <span data-lang-block data-lang="de">Platzhalter</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-lang-block data-lang="zh">联系我们</span>
+      <span data-lang-block data-lang="en">Contact</span>
+      <span data-lang-block data-lang="de">Kontakt</span>
+    </h2>
+    <p class="section-sub">
+      <span data-lang-block data-lang="zh">告诉我们您的房子情况，尽快给您报价</span>
+      <span data-lang-block data-lang="en">Tell us about your place, we'll get you a quote quickly</span>
+      <span data-lang-block data-lang="de">Erzählen Sie uns von Ihrer Wohnung, wir melden uns schnell mit einem Angebot</span>
+    </p>
+
+    <div class="contact-box">
+      <div class="item">
+        <b data-lang-block data-lang="zh">服务城市：</b><b data-lang-block data-lang="en">Service area:</b><b data-lang-block data-lang="de">Servicegebiet:</b>
+        <span data-lang-block data-lang="zh">慕尼黑及周边</span>
+        <span data-lang-block data-lang="en">Munich and surrounding areas</span>
+        <span data-lang-block data-lang="de">München und Umgebung</span>
+      </div>
+      <div class="item">
+        <b data-lang-block data-lang="zh">电话：</b><b data-lang-block data-lang="en">Phone:</b><b data-lang-block data-lang="de">Telefon:</b>
+        [电话号码占位]
+      </div>
+      <div class="item">
+        <b data-lang-block data-lang="zh">邮箱：</b><b data-lang-block data-lang="en">Email:</b><b data-lang-block data-lang="de">E-Mail:</b>
+        [邮箱地址占位]
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span data-lang-block data-lang="zh">© 2026 FreshHome MUC · 慕尼黑</span>
+  <span data-lang-block data-lang="en">© 2026 FreshHome MUC · Munich</span>
+  <span data-lang-block data-lang="de">© 2026 FreshHome MUC · München</span>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button type="button" class="lb-close" aria-label="close">&times;</button>
+  <button type="button" class="lb-nav lb-prev" aria-label="previous">&#8249;</button>
+  <img id="lightbox-img" src="" alt="">
+  <button type="button" class="lb-nav lb-next" aria-label="next">&#8250;</button>
+  <span class="lb-counter" id="lightbox-counter"></span>
+</div>
+
+<script>
+(function () {
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightbox-img');
+  var counterEl = document.getElementById('lightbox-counter');
+  var prevBtn = document.querySelector('.lb-prev');
+  var nextBtn = document.querySelector('.lb-next');
+
+  var currentGroup = [];
+  var currentIndex = 0;
+
+  function render() {
+    var item = currentGroup[currentIndex];
+    lightboxImg.src = item.src;
+    lightboxImg.alt = item.alt || '';
+    var multiple = currentGroup.length > 1;
+    prevBtn.hidden = !multiple;
+    nextBtn.hidden = !multiple;
+    counterEl.textContent = multiple ? (currentIndex + 1) + ' / ' + currentGroup.length : '';
+  }
+  function openLightbox(group, index) {
+    currentGroup = group;
+    currentIndex = index;
+    render();
+    lightbox.classList.add('open');
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightboxImg.src = '';
+  }
+  function step(delta) {
+    currentIndex = (currentIndex + delta + currentGroup.length) % currentGroup.length;
+    render();
+  }
+
+  document.querySelectorAll('.ba-pair').forEach(function (pair) {
+    var imgs = Array.prototype.slice.call(pair.querySelectorAll('.ba-slot img'));
+    var group = imgs.map(function (img) { return { src: img.src, alt: img.alt }; });
+    imgs.forEach(function (img, i) {
+      img.addEventListener('click', function () {
+        openLightbox(group, i);
+      });
+    });
+  });
+
+  lightbox.addEventListener('click', closeLightbox);
+  lightboxImg.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.querySelector('.lb-close').addEventListener('click', function (e) {
+    e.stopPropagation();
+    closeLightbox();
+  });
+  prevBtn.addEventListener('click', function (e) { e.stopPropagation(); step(-1); });
+  nextBtn.addEventListener('click', function (e) { e.stopPropagation(); step(1); });
+  document.addEventListener('keydown', function (e) {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+  });
+})();
+
+(function () {
+  var supported = ['zh', 'en', 'de'];
+  function setLang(lang) {
+    if (supported.indexOf(lang) === -1) lang = 'zh';
+    document.querySelectorAll('[data-lang-block]').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-lang') === lang);
+    });
+    document.querySelectorAll('.lang-switch button').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-set-lang') === lang);
+    });
+    document.documentElement.setAttribute('lang', lang);
+    localStorage.setItem('cleaning-site-lang', lang);
+    document.dispatchEvent(new CustomEvent('langchange', { detail: { lang: lang } }));
+  }
+  document.querySelectorAll('.lang-switch button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      setLang(btn.getAttribute('data-set-lang'));
+    });
+  });
+  var saved = localStorage.getItem('cleaning-site-lang');
+  setLang(saved && supported.indexOf(saved) !== -1 ? saved : 'zh');
+})();
+
+(function () {
+  var MUNICH_CENTER = { lat: 48.1374, lon: 11.5755 }; // Marienplatz
+  var STRINGS = {
+    zh: {
+      loading: '查询中…',
+      notFound: '找不到这个地址，换个写法再试试（比如加上门牌号和城市名）',
+      networkError: '查询失败，请稍后再试',
+      disclaimer: '这是根据直线距离估算的，不是官方精确边界，最终分区和价格以预约确认为准。',
+      distance: function (km) { return '距市中心约 ' + km + ' 公里'; },
+      bands: {
+        ring:  { label: 'M 圈以内',                     detail: '€30 / 小时，最低预约 3 小时起' },
+        city:  { label: 'M 圈外，慕尼黑市区内（约 Zone M）', detail: '€35 / 小时，最低预约 4 小时起' },
+        zone1: { label: '大约 Zone 1',                   detail: '€35 / 小时，最低预约 4 小时起' },
+        zone2: { label: '大约 Zone 2',                   detail: '€35 / 小时，最低预约 4 小时起' },
+        far:   { label: '更远的地方',                     detail: '请联系我们协商价格' }
+      }
+    },
+    en: {
+      loading: 'Checking…',
+      notFound: "Couldn't find that address — try adding a house number and city",
+      networkError: 'Something went wrong — please try again',
+      disclaimer: 'This is a rough estimate based on straight-line distance, not the official zone boundaries. Final zone and price are confirmed when you book.',
+      distance: function (km) { return '~' + km + ' km from the city center'; },
+      bands: {
+        ring:  { label: 'Inside the M-Ring',                              detail: '€30 / hour, minimum 3 hours' },
+        city:  { label: 'Outside the M-Ring, still within Munich (roughly Zone M)', detail: '€35 / hour, minimum 4 hours' },
+        zone1: { label: 'Roughly Zone 1',                                 detail: '€35 / hour, minimum 4 hours' },
+        zone2: { label: 'Roughly Zone 2',                                 detail: '€35 / hour, minimum 4 hours' },
+        far:   { label: 'Further out',                                   detail: 'Get in touch to discuss pricing' }
+      }
+    },
+    de: {
+      loading: 'Wird geprüft…',
+      notFound: 'Adresse nicht gefunden — bitte mit Hausnummer und Stadt versuchen',
+      networkError: 'Etwas ist schiefgelaufen — bitte später erneut versuchen',
+      disclaimer: 'Das ist eine grobe Schätzung anhand der Luftlinie, keine offizielle Zonengrenze. Zone und Preis werden bei der Buchung final bestätigt.',
+      distance: function (km) { return 'ca. ' + km + ' km vom Stadtzentrum entfernt'; },
+      bands: {
+        ring:  { label: 'Innerhalb des Mittleren Rings',                         detail: '30 € / Stunde, Mindestbuchung 3 Stunden' },
+        city:  { label: 'Außerhalb des Mittleren Rings, noch in München (ungefähr Zone M)', detail: '35 € / Stunde, Mindestbuchung 4 Stunden' },
+        zone1: { label: 'Ungefähr Zone 1',                                       detail: '35 € / Stunde, Mindestbuchung 4 Stunden' },
+        zone2: { label: 'Ungefähr Zone 2',                                       detail: '35 € / Stunde, Mindestbuchung 4 Stunden' },
+        far:   { label: 'Weiter draußen',                                       detail: 'Bitte melden, wir besprechen den Preis' }
+      }
+    }
+  };
+
+  function currentLang() {
+    var l = document.documentElement.getAttribute('lang');
+    return STRINGS[l] ? l : 'zh';
+  }
+
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    var R = 6371;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function classify(km) {
+    if (km <= 4.5) return 'ring';
+    if (km <= 11) return 'city';
+    if (km <= 20) return 'zone1';
+    if (km <= 30) return 'zone2';
+    return 'far';
+  }
+
+  var form = document.getElementById('zl-form');
+  var input = document.getElementById('zl-input');
+  var submitBtn = document.getElementById('zl-submit');
+  var resultEl = document.getElementById('zl-result');
+  var lastState = null; // { type: 'result', km, bandKey } | { type: 'error', kind }
+
+  function applyPlaceholder() {
+    var lang = currentLang();
+    input.placeholder = input.getAttribute('data-i18n-placeholder-' + lang) || '';
+  }
+
+  function renderResult() {
+    if (!lastState) return;
+    var t = STRINGS[currentLang()];
+    resultEl.classList.add('show');
+    if (lastState.type === 'loading') {
+      resultEl.classList.remove('zl-error');
+      resultEl.innerHTML = '<div class="zl-zone">' + t.loading + '</div>';
+      return;
+    }
+    if (lastState.type === 'error') {
+      resultEl.classList.add('zl-error');
+      var msg = lastState.kind === 'notfound' ? t.notFound : t.networkError;
+      resultEl.innerHTML = '<div class="zl-zone">' + msg + '</div>';
+      return;
+    }
+    resultEl.classList.remove('zl-error');
+    var band = t.bands[lastState.bandKey];
+    var km = Math.round(lastState.km * 10) / 10;
+    resultEl.innerHTML =
+      '<div class="zl-zone">' + band.label + '</div>' +
+      '<div class="zl-detail">' + band.detail + '</div>' +
+      '<div class="zl-detail">' + t.distance(km) + '</div>' +
+      '<div class="zl-disclaimer">' + t.disclaimer + '</div>';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var address = input.value.trim();
+    if (!address) return;
+    submitBtn.disabled = true;
+    lastState = { type: 'loading' };
+    renderResult();
+
+    var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=de' +
+      '&viewbox=11.36,48.25,11.78,48.02&q=' + encodeURIComponent(address);
+
+    fetch(url, { headers: { 'Accept-Language': currentLang() } })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data || !data.length) {
+          lastState = { type: 'error', kind: 'notfound' };
+          renderResult();
+          return;
+        }
+        var lat = parseFloat(data[0].lat);
+        var lon = parseFloat(data[0].lon);
+        var km = haversineKm(MUNICH_CENTER.lat, MUNICH_CENTER.lon, lat, lon);
+        lastState = { type: 'result', km: km, bandKey: classify(km) };
+        renderResult();
+      })
+      .catch(function () {
+        lastState = { type: 'error', kind: 'network' };
+        renderResult();
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+      });
+  });
+
+  document.addEventListener('langchange', function () {
+    applyPlaceholder();
+    renderResult();
+  });
+  applyPlaceholder();
+})();
+</script>
+
+</body>
+</html>
