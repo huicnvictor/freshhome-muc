@@ -151,7 +151,7 @@
   .zl-result.zl-error .zl-zone { color: #b3402c; }
 
   /* booking calendar */
-  .cal-wrap { max-width: 760px; margin: 0 auto; }
+  .cal-wrap { max-width: 760px; margin: 0 auto; position: relative; }
   #cal-root { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .cal-month {
     background: var(--card); border: 1px solid var(--border);
@@ -177,18 +177,39 @@
   .cal-cell.full:hover { background: #e9e6dd; }
   .cal-cell.full.selected { background: var(--ink-soft); color: #fff; }
   .cal-cell.full .mk { font-size: 0.6rem; margin-top: 2px; letter-spacing: 0.02em; }
-  .cal-slots { margin-top: 20px; text-align: center; font-size: 0.9rem; min-height: 1.4em; color: var(--ink-soft); }
-  .cal-slots .slot-chip {
-    display: inline-block; margin: 4px; padding: 6px 12px;
-    border: 1px solid var(--teal); border-radius: 999px;
-    color: var(--teal-dark); font-weight: 600; font-size: 0.85rem;
-  }
-  .cal-slots .slot-chip.booked {
-    border-color: var(--border); color: var(--ink-soft);
-    text-decoration: line-through; font-weight: 500;
-  }
-  .cal-slots .slot-chip .bk-tag { text-decoration: none; margin-left: 6px; font-size: 0.72rem; }
+  .cal-slots { margin-top: 20px; text-align: center; font-size: 0.85rem; min-height: 1.2em; color: var(--ink-soft); }
   .cal-hint { text-align: center; font-size: 0.8rem; color: var(--ink-soft); margin: 12px 0 0; }
+
+  /* day popover */
+  .cal-pop {
+    position: absolute; z-index: 30; width: 190px; max-width: 74vw;
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(20, 30, 28, 0.18); padding: 12px 14px 10px;
+    text-align: left; font-size: 0.85rem;
+  }
+  .cal-pop::before {
+    content: ""; position: absolute; top: -8px; left: var(--caret, 50%);
+    transform: translateX(-50%);
+    border: 8px solid transparent; border-top: 0; border-bottom-color: var(--border);
+  }
+  .cal-pop::after {
+    content: ""; position: absolute; top: -6px; left: var(--caret, 50%);
+    transform: translateX(-50%);
+    border: 7px solid transparent; border-top: 0; border-bottom-color: var(--card);
+  }
+  .cal-pop .pop-date { font-weight: 700; color: var(--ink); margin-bottom: 4px; padding-right: 16px; }
+  .cal-pop .pop-note { font-size: 0.75rem; color: var(--ink-soft); margin-bottom: 8px; }
+  .cal-pop .pop-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 5px 0; border-top: 1px solid var(--border);
+  }
+  .cal-pop .pop-row .t { font-weight: 600; }
+  .cal-pop .pop-row .ok { color: var(--teal-dark); font-weight: 600; }
+  .cal-pop .pop-row .no { color: var(--ink-soft); text-decoration: line-through; }
+  .cal-pop .pop-close {
+    position: absolute; top: 5px; right: 8px; border: none; background: none;
+    font-size: 1.05rem; line-height: 1; color: var(--ink-soft); cursor: pointer; padding: 2px;
+  }
   @media (max-width: 560px) {
     #cal-root { grid-template-columns: 1fr; }
   }
@@ -868,6 +889,7 @@
 
     <div class="cal-wrap">
       <div id="cal-root"></div>
+      <div class="cal-pop" id="cal-pop" hidden></div>
       <div class="cal-slots" id="cal-slots"></div>
       <p class="cal-hint">
         <span data-lang-block data-lang="zh">看中某个时间？请通过下方联系方式告诉我们</span>
@@ -1158,7 +1180,9 @@
 (function () {
   var root = document.getElementById('cal-root');
   var slotsEl = document.getElementById('cal-slots');
-  if (!root || !slotsEl) return;
+  var pop = document.getElementById('cal-pop');
+  var calWrap = document.querySelector('.cal-wrap');
+  if (!root || !slotsEl || !pop || !calWrap) return;
 
   var LOC = {
     zh: {
@@ -1167,9 +1191,9 @@
       title: function (y, m) { return y + '年 ' + LOC.zh.months[m]; },
       day: function (y, m, d) { return (m + 1) + '月' + d + '日'; },
       pick: '点一个日期查看当天的时间和已约情况',
-      on: function (label) { return label + '：'; },
-      allBooked: function (label) { return label + '：当天已约满'; },
+      allBookedNote: '当天已约满',
       bookedTag: '已约',
+      openTag: '可约',
       full: '满',
       fail: '暂时无法加载可预约时间，请直接联系我们'
     },
@@ -1179,9 +1203,9 @@
       title: function (y, m) { return LOC.en.months[m] + ' ' + y; },
       day: function (y, m, d) { return LOC.en.months[m] + ' ' + d; },
       pick: 'Tap a date to see its times and what is already booked',
-      on: function (label) { return label + ':'; },
-      allBooked: function (label) { return label + ': fully booked'; },
+      allBookedNote: 'Fully booked',
       bookedTag: 'booked',
+      openTag: 'open',
       full: 'full',
       fail: 'Could not load available times — please contact us directly'
     },
@@ -1191,9 +1215,9 @@
       title: function (y, m) { return LOC.de.months[m] + ' ' + y; },
       day: function (y, m, d) { return d + '. ' + LOC.de.months[m]; },
       pick: 'Tippen Sie auf einen Tag, um Zeiten und belegte Slots zu sehen',
-      on: function (label) { return label + ':'; },
-      allBooked: function (label) { return label + ': ausgebucht'; },
+      allBookedNote: 'Ausgebucht',
       bookedTag: 'belegt',
+      openTag: 'frei',
       full: 'voll',
       fail: 'Verfügbare Zeiten konnten nicht geladen werden — bitte direkt melden'
     }
@@ -1218,32 +1242,69 @@
     return d.times.some(function (tm) { return !isBooked(dateKey, tm); });
   }
 
-  function renderSlots() {
+  function renderHint() {
     var t = LOC[lang()];
-    if (loadError) { slotsEl.textContent = t.fail; return; }
-    var d = selectedKey && days[selectedKey];
-    if (!d) { slotsEl.textContent = t.pick; return; }
-    var p = selectedKey.split('-');
+    slotsEl.textContent = loadError ? t.fail : (selectedKey ? '' : t.pick);
+  }
+
+  function hidePop() {
+    pop.hidden = true;
+    selectedKey = null;
+    root.querySelectorAll('.cal-cell.selected').forEach(function (n) {
+      n.classList.remove('selected');
+    });
+    renderHint();
+  }
+
+  function showPop(cell, dateKey) {
+    var t = LOC[lang()];
+    var d = days[dateKey];
+    if (!d) return;
+    var p = dateKey.split('-');
     var label = t.day(+p[0], +p[1] - 1, +p[2]);
-    var open = hasOpenSlot(selectedKey);
-    var chips = d.times.map(function (tm) {
-      if (isBooked(selectedKey, tm)) {
-        return '<span class="slot-chip booked">' + tm +
-          '<span class="bk-tag">' + t.bookedTag + '</span></span>';
-      }
-      return '<span class="slot-chip">' + tm + '</span>';
+    var allBooked = !hasOpenSlot(dateKey);
+    var rows = d.times.map(function (tm) {
+      var booked = isBooked(dateKey, tm);
+      return '<div class="pop-row"><span class="t">' + tm + '</span>' +
+        (booked ? '<span class="no">' + t.bookedTag + '</span>'
+                : '<span class="ok">' + t.openTag + '</span>') +
+        '</div>';
     }).join('');
-    var head = open ? t.on(label) : t.allBooked(label);
-    slotsEl.innerHTML = '<div style="margin-bottom:8px">' + head + '</div>' + chips;
+    pop.innerHTML =
+      '<button type="button" class="pop-close" aria-label="close">&times;</button>' +
+      '<div class="pop-date">' + label + '</div>' +
+      (allBooked ? '<div class="pop-note">' + t.allBookedNote + '</div>' : '') +
+      rows;
+    pop.hidden = false;
+
+    var wr = calWrap.getBoundingClientRect();
+    var cr = cell.getBoundingClientRect();
+    var popW = pop.offsetWidth;
+    var center = cr.left - wr.left + cr.width / 2;
+    var left = center - popW / 2;
+    var maxL = calWrap.clientWidth - popW - 4;
+    if (left < 4) left = 4;
+    if (left > maxL) left = maxL;
+    pop.style.left = left + 'px';
+    pop.style.top = (cr.bottom - wr.top + 10) + 'px';
+    var caret = Math.max(16, Math.min(popW - 16, center - left));
+    pop.style.setProperty('--caret', caret + 'px');
+
+    pop.querySelector('.pop-close').addEventListener('click', function (e) {
+      e.stopPropagation();
+      hidePop();
+    });
   }
 
   function selectCell(dateKey, node) {
+    if (selectedKey === dateKey && !pop.hidden) { hidePop(); return; }
     selectedKey = dateKey;
     root.querySelectorAll('.cal-cell.selected').forEach(function (n) {
       n.classList.remove('selected');
     });
     node.classList.add('selected');
-    renderSlots();
+    renderHint();
+    showPop(node, dateKey);
   }
 
   function buildMonth(year, month, today) {
@@ -1305,6 +1366,8 @@
   }
 
   function renderCalendar() {
+    pop.hidden = true;
+    selectedKey = null;
     root.innerHTML = '';
     var today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -1312,8 +1375,18 @@
     var m = today.getMonth();
     root.appendChild(buildMonth(y, m, today));
     root.appendChild(buildMonth(m === 11 ? y + 1 : y, m === 11 ? 0 : m + 1, today));
-    renderSlots();
+    renderHint();
   }
+
+  document.addEventListener('click', function (e) {
+    if (pop.hidden) return;
+    if (pop.contains(e.target)) return;
+    if (e.target.closest && e.target.closest('.cal-cell.avail, .cal-cell.full')) return;
+    hidePop();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !pop.hidden) hidePop();
+  });
 
   fetch('availability.json', { cache: 'no-cache' })
     .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
