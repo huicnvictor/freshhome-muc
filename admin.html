@@ -155,8 +155,12 @@
         <input type="email" id="cEmail" placeholder="hello@example.com">
       </div>
       <div class="row">
-        <label for="cWa">WhatsApp（选填，填了网站会多显示一行）</label>
+        <label for="cWa">WhatsApp（选填，填号码，网站显示带图标的链接）</label>
         <input type="text" id="cWa" placeholder="+49 151 23456789">
+      </div>
+      <div class="row">
+        <label for="cWx">WeChat 微信号（选填，填了网站显示带图标的一行）</label>
+        <input type="text" id="cWx" placeholder="wxid_freshhome">
       </div>
       <div style="margin-top:6px">
         <button class="primary" id="saveContact" disabled>保存联系方式</button>
@@ -465,6 +469,7 @@
     $('cPhone').value = c.phone || '';
     $('cEmail').value = c.email || '';
     $('cWa').value = c.whatsapp || '';
+    $('cWx').value = c.wechat || '';
     contactDirty = false; updateContactDirty();
   }
   function markContactDirty() { contactDirty = true; updateContactDirty(); }
@@ -472,7 +477,7 @@
     $('saveContact').disabled = !contactDirty;
     $('contactDirty').textContent = contactDirty ? '有未保存的改动' : '';
   }
-  ['cPhone', 'cEmail', 'cWa'].forEach(function (id) {
+  ['cPhone', 'cEmail', 'cWa', 'cWx'].forEach(function (id) {
     $(id).addEventListener('input', markContactDirty);
   });
   $('saveContact').addEventListener('click', async function () {
@@ -482,6 +487,7 @@
     content.obj.phone = $('cPhone').value.trim();
     content.obj.email = $('cEmail').value.trim();
     content.obj.whatsapp = $('cWa').value.trim();
+    content.obj.wechat = $('cWx').value.trim();
     try {
       content.sha = await ghPut('content.json', content.obj, content.sha, 'Admin: update contact details');
       contactDirty = false; updateContactDirty();
