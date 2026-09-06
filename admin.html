@@ -151,10 +151,6 @@
         <input type="text" id="cPhone" placeholder="+49 151 23456789">
       </div>
       <div class="row">
-        <label for="cEmail">邮箱</label>
-        <input type="email" id="cEmail" placeholder="hello@example.com">
-      </div>
-      <div class="row">
         <label for="cWa">WhatsApp（选填，填号码，网站显示带图标的链接）</label>
         <input type="text" id="cWa" placeholder="+49 151 23456789">
       </div>
@@ -467,7 +463,6 @@
   function loadContactFromObj() {
     var c = content.obj || {};
     $('cPhone').value = c.phone || '';
-    $('cEmail').value = c.email || '';
     $('cWa').value = c.whatsapp || '';
     $('cWx').value = c.wechat || '';
     contactDirty = false; updateContactDirty();
@@ -477,7 +472,7 @@
     $('saveContact').disabled = !contactDirty;
     $('contactDirty').textContent = contactDirty ? '有未保存的改动' : '';
   }
-  ['cPhone', 'cEmail', 'cWa', 'cWx'].forEach(function (id) {
+  ['cPhone', 'cWa', 'cWx'].forEach(function (id) {
     $(id).addEventListener('input', markContactDirty);
   });
   $('saveContact').addEventListener('click', async function () {
@@ -485,7 +480,6 @@
     $('saveContact').disabled = true;
     if (!content.obj) content.obj = {};
     content.obj.phone = $('cPhone').value.trim();
-    content.obj.email = $('cEmail').value.trim();
     content.obj.whatsapp = $('cWa').value.trim();
     content.obj.wechat = $('cWx').value.trim();
     try {
