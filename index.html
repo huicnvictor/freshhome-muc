@@ -150,6 +150,40 @@
   }
   .zl-result.zl-error .zl-zone { color: #b3402c; }
 
+  /* booking calendar */
+  .cal-wrap { max-width: 760px; margin: 0 auto; }
+  #cal-root { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .cal-month {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px;
+  }
+  .cal-title { text-align: center; font-weight: 700; margin-bottom: 14px; font-size: 0.98rem; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-dow { text-align: center; font-size: 0.7rem; color: var(--ink-soft); font-weight: 600; padding: 4px 0; }
+  .cal-cell {
+    aspect-ratio: 1 / 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; border-radius: 8px; font-size: 0.85rem;
+  }
+  .cal-cell.past { color: var(--border); }
+  .cal-cell.avail {
+    background: var(--teal-light); color: var(--teal-dark);
+    font-weight: 700; cursor: pointer;
+  }
+  .cal-cell.avail:hover { background: #d3ebe5; }
+  .cal-cell.avail.selected { background: var(--teal); color: #fff; }
+  .cal-cell .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); margin-top: 3px; }
+  .cal-cell.avail.selected .dot { background: #fff; }
+  .cal-slots { margin-top: 20px; text-align: center; font-size: 0.9rem; min-height: 1.4em; color: var(--ink-soft); }
+  .cal-slots .slot-chip {
+    display: inline-block; margin: 4px; padding: 6px 12px;
+    border: 1px solid var(--teal); border-radius: 999px;
+    color: var(--teal-dark); font-weight: 600; font-size: 0.85rem;
+  }
+  .cal-hint { text-align: center; font-size: 0.8rem; color: var(--ink-soft); margin: 12px 0 0; }
+  @media (max-width: 560px) {
+    #cal-root { grid-template-columns: 1fr; }
+  }
+
   /* before/after */
   .ba-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
   .ba-pair { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
@@ -810,6 +844,31 @@
   </div>
 </section>
 
+<section class="alt" id="booking">
+  <div class="wrap">
+    <h2 class="section-title">
+      <span data-lang-block data-lang="zh">可预约时间</span>
+      <span data-lang-block data-lang="en">Available dates</span>
+      <span data-lang-block data-lang="de">Verfügbare Termine</span>
+    </h2>
+    <p class="section-sub">
+      <span data-lang-block data-lang="zh">绿色日期还有空档，点一下看具体时间。请提前两周预约，实际时间以联系确认为准</span>
+      <span data-lang-block data-lang="en">Dates in green still have openings — tap one to see the times. Please book two weeks ahead; times are confirmed by contacting us</span>
+      <span data-lang-block data-lang="de">Grün markierte Tage haben noch freie Zeiten — tippen Sie darauf. Bitte zwei Wochen im Voraus buchen; Zeiten werden per Kontakt bestätigt</span>
+    </p>
+
+    <div class="cal-wrap">
+      <div id="cal-root"></div>
+      <div class="cal-slots" id="cal-slots"></div>
+      <p class="cal-hint">
+        <span data-lang-block data-lang="zh">看中某个时间？请通过下方联系方式告诉我们</span>
+        <span data-lang-block data-lang="en">Found a time that works? Let us know via the contact details below</span>
+        <span data-lang-block data-lang="de">Passende Zeit gefunden? Melden Sie sich über die Kontaktdaten unten</span>
+      </p>
+    </div>
+  </div>
+</section>
+
 <section id="contact">
   <div class="wrap">
     <h2 class="section-title">
@@ -1085,6 +1144,142 @@
     renderResult();
   });
   applyPlaceholder();
+})();
+
+(function () {
+  var root = document.getElementById('cal-root');
+  var slotsEl = document.getElementById('cal-slots');
+  if (!root || !slotsEl) return;
+
+  var LOC = {
+    zh: {
+      dow: ['一', '二', '三', '四', '五', '六', '日'],
+      months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      title: function (y, m) { return y + '年 ' + LOC.zh.months[m]; },
+      day: function (y, m, d) { return (m + 1) + '月' + d + '日'; },
+      pick: '点一个绿色日期查看可预约时间',
+      on: function (label) { return label + ' 可预约：'; },
+      fail: '暂时无法加载可预约时间，请直接联系我们'
+    },
+    en: {
+      dow: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      title: function (y, m) { return LOC.en.months[m] + ' ' + y; },
+      day: function (y, m, d) { return LOC.en.months[m] + ' ' + d; },
+      pick: 'Tap a date shown in green to see available times',
+      on: function (label) { return 'Available on ' + label + ':'; },
+      fail: 'Could not load available times — please contact us directly'
+    },
+    de: {
+      dow: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+      months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+      title: function (y, m) { return LOC.de.months[m] + ' ' + y; },
+      day: function (y, m, d) { return d + '. ' + LOC.de.months[m]; },
+      pick: 'Tippen Sie auf einen grün markierten Tag, um die Zeiten zu sehen',
+      on: function (label) { return 'Verfügbar am ' + label + ':'; },
+      fail: 'Verfügbare Zeiten konnten nicht geladen werden — bitte direkt melden'
+    }
+  };
+  function lang() { var l = document.documentElement.getAttribute('lang'); return LOC[l] ? l : 'zh'; }
+
+  var avail = {};
+  var loadError = false;
+  var selectedKey = null;
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function keyOf(y, m, d) { return y + '-' + pad(m + 1) + '-' + pad(d); }
+
+  function renderSlots() {
+    var t = LOC[lang()];
+    if (loadError) { slotsEl.textContent = t.fail; return; }
+    if (!selectedKey || !avail[selectedKey]) { slotsEl.textContent = t.pick; return; }
+    var p = selectedKey.split('-');
+    var label = t.day(+p[0], +p[1] - 1, +p[2]);
+    var chips = avail[selectedKey].map(function (tm) {
+      return '<span class="slot-chip">' + tm + '</span>';
+    }).join('');
+    slotsEl.innerHTML = '<div style="margin-bottom:8px">' + t.on(label) + '</div>' + chips;
+  }
+
+  function buildMonth(year, month, today) {
+    var t = LOC[lang()];
+    var wrap = document.createElement('div');
+    wrap.className = 'cal-month';
+    var title = document.createElement('div');
+    title.className = 'cal-title';
+    title.textContent = t.title(year, month);
+    wrap.appendChild(title);
+
+    var grid = document.createElement('div');
+    grid.className = 'cal-grid';
+    t.dow.forEach(function (d) {
+      var c = document.createElement('div');
+      c.className = 'cal-dow';
+      c.textContent = d;
+      grid.appendChild(c);
+    });
+
+    var startDow = (new Date(year, month, 1).getDay() + 6) % 7;
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (var i = 0; i < startDow; i++) {
+      grid.appendChild(document.createElement('div'));
+    }
+    for (var day = 1; day <= daysInMonth; day++) {
+      var cell = document.createElement('div');
+      cell.className = 'cal-cell';
+      var k = keyOf(year, month, day);
+      var cellDate = new Date(year, month, day);
+      var num = document.createElement('span');
+      num.textContent = day;
+      cell.appendChild(num);
+
+      if (cellDate < today) {
+        cell.className += ' past';
+      } else if (avail[k] && avail[k].length) {
+        cell.className += ' avail';
+        var dot = document.createElement('span');
+        dot.className = 'dot';
+        cell.appendChild(dot);
+        if (k === selectedKey) cell.className += ' selected';
+        (function (kk, node) {
+          node.addEventListener('click', function () {
+            selectedKey = kk;
+            root.querySelectorAll('.cal-cell.selected').forEach(function (n) {
+              n.classList.remove('selected');
+            });
+            node.classList.add('selected');
+            renderSlots();
+          });
+        })(k, cell);
+      }
+      grid.appendChild(cell);
+    }
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  function renderCalendar() {
+    root.innerHTML = '';
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var y = today.getFullYear();
+    var m = today.getMonth();
+    root.appendChild(buildMonth(y, m, today));
+    root.appendChild(buildMonth(m === 11 ? y + 1 : y, m === 11 ? 0 : m + 1, today));
+    renderSlots();
+  }
+
+  fetch('availability.json', { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(function (data) {
+      (data.slots || []).forEach(function (s) {
+        if (s && s.date && Array.isArray(s.times)) avail[s.date] = s.times.slice();
+      });
+    })
+    .catch(function () { loadError = true; })
+    .finally(function () { renderCalendar(); });
+
+  document.addEventListener('langchange', renderCalendar);
 })();
 </script>
 
