@@ -193,9 +193,14 @@
     var res = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + path + '?ref=' + BRANCH + '&t=' + Date.now(), {
       headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' }
     });
-    if (res.status === 401) throw { code: 'auth' };
     if (res.status === 404) return { obj: null, sha: null };
-    if (!res.ok) throw { code: 'http', status: res.status };
+    if (!res.ok) {
+      var eb = await res.json().catch(function () { return {}; });
+      throw {
+        code: res.status === 401 ? 'auth' : (res.status === 403 ? 'forbidden' : 'http'),
+        status: res.status, msg: eb.message || ''
+      };
+    }
     var j = await res.json();
     return { obj: JSON.parse(b64dec(j.content)), sha: j.sha };
   }
@@ -249,8 +254,17 @@
       showApp();
     } catch (err) {
       token = null;
-      if (err && err.code === 'auth') showLogin('Token 无效或权限不足', true);
-      else showLogin('连接失败：' + (err && (err.status || err.code || err.message) || '未知错误'), true);
+      try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+      var gh = err && err.msg ? '（GitHub: ' + err.msg + '）' : '';
+      if (err && err.code === 'auth') {
+        showLogin('Token 无效' + gh + '。检查：整串都复制上了没有漏字符；用的是 Fine-grained token（github_pat_ 开头）；token 没过期。', true);
+      } else if (err && err.code === 'forbidden') {
+        showLogin('权限不足' + gh + '。回到 GitHub 打开这个 token，确认 Repository access 选了 freshhome-muc，Permissions → Contents = Read and write。', true);
+      } else {
+        showLogin('连接失败：' + (err && (err.status || err.code || err.message) || '未知错误'), true);
+      }
+      $('token').focus();
+      $('token').select();
     }
   }
 
